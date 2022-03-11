@@ -1,4 +1,4 @@
-# Two-dimensional fully-periodic incompressible viscous Newtonian flows - Pseudo-spectral simulation in Julia
+# Pseudo-spectral simulation of fully-periodic two-dimensional incompressible Navier-Stokes flows in Julia
 
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-green.svg
 [docs-dev-url]: https://rmsrosa.github.io/2dnsepervortjl/
