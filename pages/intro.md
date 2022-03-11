@@ -2,12 +2,82 @@
 
 # {{ get_title }}
 
-With this template, you have the table of contents in the menu bar on the left of each page and navigation links on the top and bottom of each page.
+We want to simulate a homogeneous, incompressible Newtonian viscous flow in a fully-periodic two-dimensional domain under a given steady volume force.
 
-The structure of the menu should be configured in the file `config.md`, at the root directory of the project. Both the menu bar and the navigation buttons are automatically built from this structure. Each page can be numbered, if so configured.
+## The Eulerian pressure-velocy formulation
 
-Pages can be generated from markdown files, julia scripts or jupyter notebooks, rendered by either [Franklin.jl](https://github.com/tlienart/Franklin.jl), [Weave.jl](https://github.com/JunoLab/Weave.jl), or [Literate.jl](https://github.com/fredrikekre/Literate.jl).
+The equations, in the vectorial Eulerian formulation for the velocity field $\mathbf{u}$ and the kinematic pressure $p$, take the form
 
-[Jupyter](https://jupyter.org) notebooks are also automatically generated via [Weave.jl](https://github.com/JunoLab/Weave.jl) or [Literate.jl](https://github.com/fredrikekre/Literate.jl). [Badges](https://shields.io) to download or open the associated notebooks in [NBViewer](https://nbviewer.org) or [Binder](https://mybinder.org), and to view the source code can also be added to each page.
+$$
+\begin{cases}
+  \displaystyle \frac{\partial \mathbf{u}}{\partial t} + (\mathbf{u} \cdot \boldsymbol{\nabla} \mathbf{u})\cdot \mathbf{u} + \boldsymbol{\nabla} p = \nu \Delta \mathbf{u} + \mathbf{f}, \\
+  \boldsymbol{\nabla} \cdot \mathbf{u} = 0.
+\end{cases}
+$$
 
-More details in the appropriate sections.
+These are assumed to hold on a two-dimensional domain $\Omega = [0, L]^2$, where $L>0$ (or rather in the interior of it), and on a time interval $t \in [t_0, T]$.
+
+We are further given a initial condition $\mathbf{u}(t_0) = \mathbf{u_0}$, where we tipically assume $t_0 = 0$. And we assume that $\mathbf{u}$ is $L$-periodic in both directions, in the sense that its $L$-periodic extension is a "smooth" function, i.e. belonging at least to $H_{\textrm{loc}}^1(\mathbb{R}^2)$.
+
+The forcing term $\mathbf{f}$ is assumed to be $L$-periodic as well, time-independent, and with zero average over $\Omega$.
+
+## Vorticity formulation
+
+An alternative formulation is for the vorticity formulation. In the two-dimensional case, the vorticity is (essentially) a scalar, and the pressure disappears, easying solving the system.
+
+When the velocity field is $\mathbf{u} = (u, v)$ and the spatial variable is $\mathbf{x} = (x, y)$, the vorticity is given by
+$$ \omega = v_x - u_y,
+$$
+where the subscripts denote the corresponding partial derivatives.
+
+Alternatively, if $\mathbf{u} = (u, v, 0)$, then $\mathbf{\omega} = \boldsymbol{\nabla} \times \mathbf{u} = (0, 0, \omega)$.
+
+By taking the curl of the linear momentum equation, we obtain
+
+$$
+\partial_t (\boldsymbol{\nabla} \times \mathbf{u}) + \boldsymbol{\nabla} \times ((\mathbf{u} \cdot \boldsymbol{\nabla} \mathbf{u})\cdot \mathbf{u}) + \boldsymbol{\nabla} \times \boldsymbol{\nabla} p = \nu \Delta (\boldsymbol{\nabla} \times \mathbf{u}) + \boldsymbol{\nabla} \times \mathbf{f}.
+$$
+
+Notice that
+$$
+\begin{array}
+  \displaystyle \boldsymbol{\nabla} \times \boldsymbol{\nabla} p & = (0, 0, 0), \\
+  \displaystyle \partial_t (\boldsymbol{\nabla} \times \mathbf{u}) & = (0, 0, \omega_t), \\
+  \displaystyle \nu \Delta (\boldsymbol{\nabla} \times \mathbf{u}) & = (0, 0, \nu\Delta\omega), \\
+  \displaystyle \boldsymbol{\nabla} \times \mathbf{f} & = (0, 0, g),
+ \end{array}
+$$
+where $g = (f_1)_y - (f_2)_x$, where $f_1$ and $f_2$ are the two compenents of the force, $\mathbf{f} = (f_1, f_2)$.
+
+As for the remaining term, we write 
+$$
+\boldsymbol{\nabla} \times ((\mathbf{u}\cdot\boldsymbol{\nabla})\mathbf{u}) = \boldsymbol{\nabla} \times \left( \begin{matrix} uu_x + vu_y \\ uv_x + vv_y \\ 0 \end{matrix}  \right)
+$$
+Considering only the third component since the others vanish, we find
+$$
+\begin{align*}
+(uv_x + vv_y)_x - (uu_x + vu_y)_y & = u_xv_x + uv_{xx} + v_xv_y + vv_{yx} - u_yu_x - uu_{xy} - v_yu_y  -vu_{yy} \\
+  & = u(v_{xx} -u_{xy}) + v(v_{yx}-u_{yy}) + u_x(v_x-u_y) + v_y(v_x-u_y) \\
+  & = u\omega_x + v\omega_y + u_x\omega + v_y\omega = (u\omega)_x + (v\omega)y = \boldsymbol{\nabla}\cdot(\omega\mathbf{u}).
+\end{align*}
+$$
+
+Combining the expressions and considereing only the $z$-component, we find the two-dimensional vorticity equation
+$$
+  \omega_t + \boldsymbol{\nabla}\cdot(\omega\mathbf{u}) = \nu\Delta \omega + g.
+$$
+
+Due to the divergence-free condition on the velocity field, we have
+$$\boldsymbol{\nabla}\cdot(\omega\mathbf{u}) = \boldsymbol{\nabla}\omega \cdot \mathbf{u} + \omega \boldsymbol{\nabla}\cdot \mathbf{u} = \boldsymbol{\nabla}\omega \cdot \mathbf{u}.$ But we'll keep the form $\boldsymbol{\nabla}\cdot(\omega\mathbf{u})$.
+
+In this case, we need to apply the inverse fft to three functions, namely on $\hat\omega$, $\hat u$, $\hat v$, and then two direct fft, namely on $\omega u$ and $\omega v$.
+
+Alternatively, we can keep it as $\boldsymbol{\nabla}\omega \cdot \mathbf{u}$ and compute four ifft and one fft.
+
+The best, however, is to perform the Basdevant reduction to reduce to four ffts (two inverse and two direct). This is obtained by writing
+$$
+\boldsymbol{\nabla} \cdot (\omega\mathbf{u}) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right).
+$$
+This way, we need to compute the inverse fft of $u$ and $v$, compute the product $uv$ and the term $v^2 - u^2$ in physical space, and compute their fft.
+
+## Stream function

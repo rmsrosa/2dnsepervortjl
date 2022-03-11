@@ -2,27 +2,27 @@
 
 ## config vars
 +++
-prepath = "booksjl-franklin-template"
+prepath = "2dnsepervortjl"
 content_tag = ""
 ignore = ["_src/"]
 +++
 
 ## book variables
 +++
-book_title = "Book Template for Franklin"
-book_subtitle = "Create books with Franklin.jl"
+book_title = "Two-dimensional fully-periodic incompressible viscous Newtonian flows"
+book_subtitle = "Pseudo-spectral simulation in Julia"
 book_author = "<a href=\"https://rmsrosa.github.io\">Ricardo M. S. Rosa</a>"
 show_license = true
-book_license = "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication"
-license_link = "https://creativecommons.org/publicdomain/zero/1.0/"
-book_licensees = ""
+book_license = "MIT"
+license_link = "LICENSE"
+book_licensees = "<a href=\"https://rmsrosa.github.io\">Ricardo M. S. Rosa</a>"
 +++
 
 ## menu variables
 +++
 show_aside = true
 show_github = true
-github_repo = "https://github.com/rmsrosa/booksjl-franklin-template"
+github_repo = "https://github.com/rmsrosa/2dnsepervortjl"
 +++
 
 ## navigation links
@@ -36,25 +36,6 @@ nav_on_bottom = true
 page_numbering = true
 menu = [
     "*pages/intro"
-    "*PART I"
-    "Configurations" => [
-        "pages/book"
-        "pages/style"
-        "pages/menu_bar"
-        "pages/toc"
-        "pages/navigation"
-        "pages/pages"
-        "pages/binder"
-    ]
-    "*PART II"
-    "pages/math_and_code" => [
-        "pages/franklinmd"
-        "_src/literate/literatejl.jl"
-        "_src/weave/weavejl.jl"
-        "_src/weave/weavejmd.jmd"
-        "_src/jupyter/notebookipynb.ipynb"
-    ]
-    "*pages/appendix"
 ]
 +++
 
@@ -65,12 +46,12 @@ link_view_source = true
 link_download_notebook = true
 link_nbview_notebook = true
 link_binder_notebook = true
-website = "rmsrosa.github.io/booksjl-franklin-template"
+website = "rmsrosa.github.io/2dnsepervortjl"
 +++
 
 ## binder variables
 +++
-nbgitpuller_repo = "rmsrosa/booksjl-franklin-template"
+nbgitpuller_repo = "rmsrosa/2dnsepervortjl"
 nbgitpuller_branch = "binderenv"
 binder_application = "lab" 
 +++
