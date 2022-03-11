@@ -9,13 +9,13 @@ ignore = ["_src/"]
 
 ## book variables
 +++
-book_title = "Two-dimensional fully-periodic incompressible viscous Newtonian flows"
+book_title = "Two-dimensional periodic flows"
 book_subtitle = "Pseudo-spectral simulation in Julia"
 book_author = "<a href=\"https://rmsrosa.github.io\">Ricardo M. S. Rosa</a>"
 show_license = true
-book_license = "MIT"
+book_license = "MIT License"
 license_link = "LICENSE"
-book_licensees = "<a href=\"https://rmsrosa.github.io\">Ricardo M. S. Rosa</a>"
+book_licensees = "<a href=\"https://rmsrosa.github.io\">(Ricardo M. S. Rosa)</a>"
 +++
 
 ## menu variables
@@ -36,6 +36,15 @@ nav_on_bottom = true
 page_numbering = true
 menu = [
     "*pages/intro"
+    "Mathematical Formulation" => [
+        "pages/pressure-velocity"
+        "pages/vorticity"
+        "pages/basdevant"
+        "pages/stream"
+    ]
+    "FFT Tools" => [
+        "_src/literate/tests_basic.jl"
+    ]
 ]
 +++
 

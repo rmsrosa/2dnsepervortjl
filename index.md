@@ -1,4 +1,4 @@
-@def title = "Pseudo-spectral simulation of two-dimensinoal fully-periodic fluid flows with FFTW and DifferentialEquations"
+@def title = "Two-dimensional periodic flows"
 
 @def nav = false
 # {{ title }}
