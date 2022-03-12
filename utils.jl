@@ -240,7 +240,7 @@ function process_it(filename)
             Literate.markdown(
                 filename,
                 out_path,
-                execute = true,
+                execute = false,
                 credit = false,
                 flavor = Literate.FranklinFlavor(),
             )
