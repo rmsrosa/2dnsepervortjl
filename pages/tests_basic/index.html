@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="" />
+  <meta name="author" content="and contributors" />
+   <title>Testing FFTW for fully periodic fluid flows</title>  
+  <link rel="shortcut icon" type="image/png" href="/2dnsepervortjl/assets/images/favicon.png"/>
+  <link rel="stylesheet" href="/2dnsepervortjl/css/base.css"/>
+  
+    <link rel="stylesheet" href="/2dnsepervortjl/css/base_showaside.css"/>
+  
+  <script src="/2dnsepervortjl/libs/mousetrap/mousetrap.min.js"></script>
+
+  
+    <link rel="stylesheet" href="/2dnsepervortjl/libs/highlight/github.min.css">
+    <script src="/2dnsepervortjl/libs/highlight/highlight.pack.js"></script>
+    <script src="/2dnsepervortjl/libs/highlight/julia.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('pre').forEach((el) => {
+          hljs.highlightElement(el);
+        });
+      });
+    </script>
+  
+
+  
+</head>
+
+<body>
+
+  <div class="books-container">
+
+  <aside class="books-menu">
+  <input type="checkbox" id="menu">
+  <label for="menu">☰</label>
+
+  <div class="books-title">
+    <a href="/2dnsepervortjl/">Two-dimensional periodic flows</a>
+  </div>
+
+  <br />
+
+  <div class="books-subtitle">
+    Pseudo-spectral simulation in Julia
+  </div>
+
+  <br />
+
+  <div class="books-author">
+    <a href="https://rmsrosa.github.io">Ricardo M. S. Rosa</a>
+  </div>
+
+  <div class="books-menu-content">
+    <div class="menu-level-1">
+    <li><a href="/2dnsepervortjl/pages/intro">Introduction</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>1. Mathematical Formulation</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/pressure-velocity">1.1. The pressure-velocity formulation</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/vorticity">1.2. Vorticity formulation</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/basdevant">1.3. Basdevant reduction</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/stream">1.4. Stream Function</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>2. FFT Tools</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/tests_basic">2.1. Testing FFTW for fully periodic fluid flows</a></li>
+    </div>
+<div>
+
+
+  
+    <a href="https://github.com/rmsrosa/2dnsepervortjl"><img src="/2dnsepervortjl/assets/images/GitHub-Mark-32px.png" alt="GitHub repo" width="18" style="margin:5px 5px" align="left"></a>
+
+  
+
+</aside>
+
+
+  <div class="books-content">
+
+    
+      <div class="navbar">
+    <p id="nav">
+<span id="nav-prev" style="float: left;">
+<a class="menu-level-1" href="/2dnsepervortjl/pages/stream">1.4. Stream Function <kbd>←</kbd></a>
+</span>
+    </p>
+</div>
+</br></br>
+
+    
+
+    
+      
+    
+<h1 id="get_title"><a href="#get_title" class="header-anchor">2.1. Testing FFTW for fully periodic fluid flows</a></h1>
+<p>Here we test the methods, in FFTW, to be used in the pseudo-spectral code described previously.</p>
+<p>Here are the packages we are gonna need.</p>
+<pre><code class="language-julia">using FFTW
+using Plots
+using Test</code></pre>
+<h2 id="the_spatial_domain"><a href="#the_spatial_domain" class="header-anchor">The spatial domain</a></h2>
+<pre><code class="language-julia">L &#61; 2π
+κ₀ &#61; 2π/L
+N &#61; 128
+x &#61; y &#61; &#40;L/N&#41;:&#40;L/N&#41;:L</code></pre>
+<pre><code class="language-julia">0.04908738521234052:0.04908738521234052:6.283185307179586</code></pre>
+<h2 id="direct_and_inverse_discrete_fourier_transform"><a href="#direct_and_inverse_discrete_fourier_transform" class="header-anchor">Direct and inverse discrete Fourier transform</a></h2>
+<pre><code class="language-julia">vort &#61; sin.&#40;one.&#40;y&#41; * x&#39;&#41; .* cos.&#40;3y * one.&#40;x&#41;&#39;&#41;
+dx_vort &#61; cos.&#40;one.&#40;y&#41; * x&#39;&#41; .* cos.&#40;3y * one.&#40;x&#41;&#39;&#41;
+dy_vort &#61; - 3 * sin.&#40;one.&#40;y&#41; * x&#39;&#41; .* sin.&#40;3y * one.&#40;x&#41;&#39;&#41;
+dd_vort &#61; - sin.&#40;one.&#40;y&#41; * x&#39;&#41; .* cos.&#40;3y * one.&#40;x&#41;&#39;&#41; - 9 * sin.&#40;one.&#40;y&#41; * x&#39;&#41; .* cos.&#40;3y * one.&#40;x&#41;&#39;&#41;
+
+display&#40;surface&#40;x, y, vort, xlabel&#61;&quot;x&quot;, ylabel&#61;&quot;y&quot;, zlabel&#61;&quot;vorticity&quot;&#41;&#41;
+
+display&#40;heatmap&#40;x, y, vort, xlabel&#61;&quot;x&quot;, ylabel&#61;&quot;y&quot;&#41;&#41;
+
+@testset &quot;check composition &#96;irfft ∘ rfft&#96;&quot; begin
+    vort_hat &#61; rfft&#40;vort&#41;
+    vortback &#61; irfft&#40;vort_hat, N&#41;
+    @test vort ≈ vortback
+end</code></pre>
+<pre><code class="language-julia">Test.DefaultTestSet&#40;&quot;check composition &#96;irfft ∘ rfft&#96;&quot;, Any&#91;&#93;, 1, false, false&#41;</code></pre>
+<h2 id="operators"><a href="#operators" class="header-anchor">Operators</a></h2>
+<pre><code class="language-julia">Dx_hat &#61; im * κ₀ * &#91;ifelse&#40;k1 ≤ N/2 &#43; 1, k1 - 1, k1 - 1 - N&#41; for k2 in 1:N/2&#43;1, k1 in 1:N&#93;
+Dy_hat &#61; im * κ₀ * &#91;k2 - 1 for k2 in 1:N/2&#43;1, k1 in 1:N&#93;
+
+Delta_hat &#61; - κ₀^2 * &#91;
+    ifelse&#40;k1 ≤ N/2 &#43; 1, &#40;k1 - 1&#41;^2 &#43; &#40;k2 - 1&#41;^2, &#40;k1 - 1 - N&#41;^2 &#43; &#40;k2 - 1&#41;^2&#41;
+    for k2 in 1:N/2&#43;1, k1 in 1:N
+&#93;
+
+Hu_hat &#61; - Dy_hat ./ Delta_hat
+Hu_hat&#91;1, 1&#93; &#61; 0.0
+Hv_hat &#61; Dx_hat ./ Delta_hat
+Hv_hat&#91;1, 1&#93; &#61; 0.0</code></pre>
+<pre><code class="language-julia">0.0</code></pre>
+<p>Tests</p>
+<pre><code class="language-julia">@testset &quot;Check operators&quot; begin
+    vort_hat &#61; rfft&#40;vort&#41;
+    u_hat &#61; Hu_hat .* vort_hat
+    v_hat &#61; Hv_hat .* vort_hat
+    @test irfft&#40;Dx_hat .* vort_hat, N&#41; ≈ dx_vort # check derivative dx in spectral space
+    @test irfft&#40;Dy_hat .* vort_hat, N&#41; ≈ dy_vort # check derivative dy in spectral space
+    @test Delta_hat ≈ Dx_hat.^2 .&#43; Dy_hat.^2 # check Laplacian in spectral space
+    @test irfft&#40;Delta_hat .* vort_hat, N&#41; ≈ dd_vort
+    @test Dx_hat .* v_hat - Dy_hat .* u_hat ≈ vort_hat # check recovering velocity field from vorticity
+end</code></pre>
+<pre><code class="language-julia">Test.DefaultTestSet&#40;&quot;Check operators&quot;, Any&#91;&#93;, 5, false, false&#41;</code></pre>
+<p>check &quot;steadyness&quot; of one-mode steady state</p>
+<pre><code class="language-julia">ν &#61; 1.0e-0 # viscosity
+κ &#61; &#40;x &#61; 1, y &#61; 2&#41; # forced mode
+α &#61; &#40;re &#61; 0.1, im &#61; 0.05&#41; # strength
+
+vort_steady &#61; 2κ₀^2 * sum&#40;abs2, κ&#41; * &#40;
+    α.re * cos.&#40;κ₀ * &#40;κ.x * one.&#40;y&#41; * x&#39; &#43; κ.y * y * one.&#40;x&#41;&#39;&#41;&#41;
+    - α.im * sin.&#40;κ₀ * &#40;κ.x * one.&#40;y&#41; * x&#39; &#43; κ.y * y * one.&#40;x&#41;&#39;&#41;&#41;
+&#41;
+vort_steady_hat &#61; rfft&#40;vort_steady&#41;
+
+display&#40;heatmap&#40;x, y, vort_steady, xlabel&#61;&quot;x&quot;, ylabel&#61;&quot;y&quot;, title&#61;&quot;steady state vorticity&quot;, titlefont&#61;12&#41;&#41;
+
+g_steady &#61; ν * &#40;
+    2α.re * κ₀^4 * sum&#40;abs2, κ&#41;^2 * cos.&#40;κ₀ * &#40;κ.x * one.&#40;y&#41; * x&#39; &#43; κ.y * y * one.&#40;x&#41;&#39;&#41;&#41;
+    - 2α.im * κ₀^4 * sum&#40;abs2, κ&#41;^2 * sin.&#40;κ₀ * &#40;κ.x * one.&#40;y&#41; * x&#39; &#43; κ.y * y * one.&#40;x&#41;&#39;&#41;&#41;
+&#41;
+g_steady_hat &#61; rfft&#40;g_steady&#41;
+
+display&#40;heatmap&#40;x, y, g_steady, xlabel&#61;&quot;x&quot;, ylabel&#61;&quot;y&quot;, title&#61;&quot;forcing term&quot;, titlefont&#61;12&#41;&#41;
+
+@testset &quot;Check single-mode stable steady state&quot; begin
+    u_steady_hat &#61; Hu_hat .* vort_steady_hat
+    v_steady_hat &#61; Hv_hat .* vort_steady_hat
+
+    u_steady &#61; irfft&#40;u_steady_hat, N&#41;
+    v_steady &#61; irfft&#40;v_steady_hat, N&#41;
+
+    vort_steady_back &#61; irfft&#40;vort_steady_hat, N&#41;
+
+    wu_steady_hat &#61; rfft&#40;vort_steady_back .* u_steady&#41;
+    wv_steady_hat &#61; rfft&#40;vort_steady_back .* v_steady&#41;
+
+    rhs_steady &#61; g_steady_hat .&#43; Delta_hat .* vort_steady_hat .- Dx_hat .* wu_steady_hat .- Dy_hat .* wv_steady_hat
+
+    vort_steady_sol_hat &#61; - g_steady_hat ./ Delta_hat
+    vort_steady_sol_hat&#91;1, 1&#93; &#61; 0.0im
+    @test maximum&#40;abs.&#40;Dx_hat .* wu_steady_hat .&#43; Dy_hat .* wv_steady_hat&#41;&#41; ≤ √eps&#40;&#41; # Vanishing bilinear term on one-mode steady state
+    @test maximum&#40;abs.&#40;rhs_steady&#41;&#41; ≤ √eps&#40;&#41; # Vanishing RHS on steady state
+    @test maximum&#40;abs.&#40;g_steady_hat .&#43; Delta_hat .* vort_steady_hat&#41;&#41; ≤ √eps&#40;&#41; # Vanishing linear Stokes on steady state
+
+    @test g_steady_hat ≈ - Delta_hat .* vort_steady_hat ≈ - Delta_hat .* vort_steady_hat .- Dx_hat .* wu_steady_hat .- Dy_hat .* wv_steady_hat # Steady state
+
+    @test vort_steady_sol_hat ≈ vort_steady_hat # Steady state solution
+end</code></pre>
+<pre><code class="language-julia">Test.DefaultTestSet&#40;&quot;Check single-mode stable steady state&quot;, Any&#91;&#93;, 5, false, false&#41;</code></pre>
+
+    <div class="navbar">
+    <p id="nav">
+<span id="nav-prev" style="float: left;">
+<a class="menu-level-1" href="/2dnsepervortjl/pages/stream">1.4. Stream Function <kbd>←</kbd></a>
+</span>
+    </p>
+</div>
+</br></br>
+
+
+
+<div class="page-foot">
+    
+        <div class="license">
+            <a href=LICENSE>MIT License </a>
+            <a href="https://rmsrosa.github.io">(Ricardo M. S. Rosa)</a>
+        </div>
+    
+
+    Last modified: March 12, 2022. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+</div><!-- CONTENT ENDS HERE -->
+
+      </div> <!-- .books-content -->
+    </div> <!-- .books-container -->
+
+    
+
+    
+        <script src="/2dnsepervortjl/libs/highlight/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();hljs.configure({tabReplace: '    '});</script>
+    
+
+  </body>
+</html>
