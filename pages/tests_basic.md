@@ -21,6 +21,10 @@ N = 128
 x = y = (L/N):(L/N):L
 ````
 
+````
+0.04908738521234052:0.04908738521234052:6.283185307179586
+````
+
 ## Direct and inverse discrete Fourier transform
 
 ````julia
@@ -40,6 +44,10 @@ display(heatmap(x, y, vort, xlabel="x", ylabel="y"))
 end
 ````
 
+````
+Test.DefaultTestSet("check composition `irfft ∘ rfft`", Any[], 1, false, false)
+````
+
 ## Operators
 
 ````julia
@@ -57,6 +65,10 @@ Hv_hat = Dx_hat ./ Delta_hat
 Hv_hat[1, 1] = 0.0
 ````
 
+````
+0.0
+````
+
 Tests
 
 ````julia
@@ -70,6 +82,10 @@ Tests
     @test irfft(Delta_hat .* vort_hat, N) ≈ dd_vort
     @test Dx_hat .* v_hat - Dy_hat .* u_hat ≈ vort_hat # check recovering velocity field from vorticity
 end
+````
+
+````
+Test.DefaultTestSet("Check operators", Any[], 5, false, false)
 ````
 
 check "steadyness" of one-mode steady state
@@ -119,5 +135,9 @@ display(heatmap(x, y, g_steady, xlabel="x", ylabel="y", title="forcing term", ti
 
     @test vort_steady_sol_hat ≈ vort_steady_hat # Steady state solution
 end
+````
+
+````
+Test.DefaultTestSet("Check single-mode stable steady state", Any[], 5, false, false)
 ````
 

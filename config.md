@@ -43,7 +43,7 @@ menu = [
         "pages/stream"
     ]
     "FFT Tools" => [
-        "_src/literate/tests_basic.jl"
+        "pages/tests_basic"
     ]
 ]
 +++
