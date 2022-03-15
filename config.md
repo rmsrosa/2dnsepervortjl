@@ -4,7 +4,6 @@
 +++
 prepath = "2dnsepervortjl"
 content_tag = ""
-ignore = ["_src/"]
 +++
 
 ## book variables
@@ -43,7 +42,7 @@ menu = [
         "pages/stream"
     ]
     "FFT Tools" => [
-        "pages/tests_basic"
+        "src/literate/tests_basic.jl"      
     ]
 ]
 +++
@@ -55,6 +54,7 @@ link_view_source = true
 link_download_notebook = true
 link_nbview_notebook = true
 link_binder_notebook = true
+exec_notebook = false
 website = "rmsrosa.github.io/2dnsepervortjl"
 +++
 

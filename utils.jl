@@ -44,9 +44,11 @@ Return the html code to display the menu bar, with the table of contents and oth
 end
 
 """
-    function hfun_get_title()
+    function hfun_get_title(section = nothing)
 
-Return the title of the page, prepended with the section number.
+Return the title of the section prepended with the section number.
+
+The section referred to is that in the path given by the argument `section` or that of the current page if `section === nothing`.
 """
 @delay function hfun_get_title(section = nothing)
     menu = globvar(:menu)
@@ -61,6 +63,15 @@ Return the title of the page, prepended with the section number.
     toc = build_toc(menu, page_numbering)
     entries = toc[map(x -> x.filename, last.(toc)).==filename_noext]
     return length(entries) == 1 ? only(last.(entries)).title : "Title not found"
+end
+
+"""
+    function hfun_link_section(section)
+
+Return a link to the given section, with the proper numbered title for the section.
+"""
+@delay function hfun_link_section(section)
+    return """<a href="/$(section[1])">$(hfun_get_title(section))</a>"""
 end
 
 """
@@ -219,24 +230,24 @@ Processing generates a Markdown file for Franklin and a Jupyter notebook for the
 """
 function process_it(filename)
     startswith(filename, "pages/") && return "$filename.md"
-    startswith(filename, "_src/") || return nothing
+    startswith(filename, "src/") || return nothing
 
-    out_path =
-        replace(
-            dirname(filename),
-            r"^_src/weave" => "pages/weaved",
-            r"^_src/literate" => "pages/literated",
-            r"^_src/jupyter" => "pages/jupytered",
-        )
+    out_path = replace(
+        dirname(filename),
+        r"^src/weave" => "pages/weaved",
+        r"^src/literate" => "pages/literated",
+        r"^src/jupyter" => "pages/jupytered",
+    )
     fig_path = "images"
     processed_filename = first(splitext("$out_path/$(basename(filename))")) * ".md"
 
     link_download_notebook = globvar(:link_download_notebook)
     link_nbview_notebook = globvar(:link_nbview_notebook)
     link_binder_notebook = globvar(:link_binder_notebook)
+    exec_notebook = globvar(:exec_notebook)
 
     if mtime(filename) > mtime(processed_filename)
-        if startswith(filename, "_src/literate/")
+        if startswith(filename, "src/literate/")
             Literate.markdown(
                 filename,
                 out_path,
@@ -250,25 +261,29 @@ function process_it(filename)
         postprocess_it(processed_filename, out_path, fig_path)
     end
 
-    notebook_output_dir = "__site/generated/notebooks/$(replace(dirname(filename), r"^_src/weave" => "weaved", r"^_src/literate" => "literated", r"^_src/jupyter" => "jupytered"))"
-    notebook_path =
-        first(splitext("$notebook_output_dir/$(basename(filename))")) * ".ipynb"
+    notebook_output_dir = "generated/notebooks/$(replace(dirname(filename), r"^src/weave" => "weaved", r"^src/literate" => "literated", r"^src/jupyter" => "jupytered"))"
+    notebook_path = first(splitext("$notebook_output_dir/$(basename(filename))")) * ".ipynb"
 
     if any(
         ==(true),
         (link_download_notebook, link_nbview_notebook, link_binder_notebook),
     ) && mtime(filename) > mtime(notebook_path)
 
-        if startswith(filename, "_src/weave/")
+        if startswith(filename, "src/weave/")
             mkpath(notebook_output_dir)
             Weave.notebook(
                 filename,
                 out_path = notebook_output_dir,
                 nbconvert_options = "--allow-errors",
             )
-        elseif startswith(filename, "_src/literate/")
-            Literate.notebook(filename, notebook_output_dir)
-        elseif startswith(filename, "_src/jupyter/")
+        elseif startswith(filename, "src/literate/")
+            Literate.notebook(
+                filename,
+                notebook_output_dir,
+                execute = exec_notebook,
+                credit = false,
+            )
+        elseif startswith(filename, "src/jupyter/")
             mkpath(notebook_output_dir)
             cp(filename, "$notebook_output_dir/$(basename(filename))", force = true)
             #= 
@@ -312,7 +327,7 @@ code associated with each page that has been processed via Weave or Literate.
         any(
             ==(true),
             (link_download_notebook, link_nbview_notebook, link_binder_notebook),
-        ) && (isfile("__site/$notebook_path"))
+        ) && (isfile("$notebook_path"))
     )
         write(
             io,
@@ -321,7 +336,7 @@ code associated with each page that has been processed via Weave or Literate.
             <p>
             """,
         )
-        if link_nbview_notebook == true && isfile("__site/$notebook_path")
+        if link_nbview_notebook == true && isfile("$notebook_path")
             website = globvar(:website)
             write(
                 io,
@@ -330,7 +345,7 @@ code associated with each page that has been processed via Weave or Literate.
                 """,
             )
         end
-        if link_binder_notebook == true && isfile("__site/$notebook_path")
+        if link_binder_notebook == true && isfile("$notebook_path")
             nbgitpuller_repo = globvar(:nbgitpuller_repo)
             nbgitpuller_branch = globvar(:nbgitpuller_branch)
             binder_application = globvar(:binder_application)
@@ -356,7 +371,7 @@ code associated with each page that has been processed via Weave or Literate.
             end
         end
 
-        if link_download_notebook == true && isfile("__site/$notebook_path")
+        if link_download_notebook == true && isfile("$notebook_path")
             write(
                 io,
                 """
@@ -371,8 +386,7 @@ code associated with each page that has been processed via Weave or Literate.
             page_numbering = globvar(:page_numbering) === true
             toc = build_toc(menu, page_numbering)
             ftoc = filter(x -> last(x).filename == first(splitext(filename)), toc)
-            source_path =
-                length(ftoc) > 0 ? "$github_repo/blob/main/$(first(first.(ftoc)))" : nothing
+            source_path = length(ftoc) > 0 ? "/$(first(first.(ftoc)))" : nothing
             write(
                 io,
                 """
@@ -393,7 +407,7 @@ code associated with each page that has been processed via Weave or Literate.
 end
 
 """
-    postprocess_it(filename, out_path, fig_path)
+    function postprocess_it(filename, out_path, fig_path)
 
 Post-process a markdown file generated by Weave or Literate for compatibility with
 Franklin, by replacing `![...](...)`` with either a full path or with `\figalt`/`\fig`
@@ -415,7 +429,8 @@ function postprocess_it(filename, out_path, fig_path)
                         s"![\1](/assets/\2)",
                     r"^!\[\]\(([^/)][^\)]*)\)" => s"\\fig{\1}",
                     r"^!\[([^\]]*)\]\(([^/)][^\)]*)\)" => s"\\figalt{\1}{\2}",
-                    r"(?<!\!)\[[^\]]*\]\(/pages/([^\)]*)\)" => s"[{{get_title pages/\1}}](/pages/\1)"
+                    r"(?<!\!)\[[^\]]*\]\(/pages/([^\)]*)\)" =>
+                        s"{{link_section pages/\1}}",
                 )
             end
             write(tmpio, line)
