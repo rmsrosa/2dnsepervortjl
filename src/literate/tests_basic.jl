@@ -5,7 +5,7 @@
 # We start by loading the packages we need:
 
 using FFTW
-using Plots
+using CairoMakie
 using Test
 
 # ## The spatial domain and its spatial discretization
@@ -21,7 +21,13 @@ N = 128
 x = y = (L/N):(L/N):L
 nothing
 
-# ## A vorticy function for testing
+# We may visualize the grid with a scatter plot, although if the mesh is too thin, we won't quite see the details. But if using GLMakie or WGLMakie, one can zoom in for a detailed view.
+
+fig, ax, plt = scatter(vec(x .* one.(y)'), vec(one.(x) .* y'))
+
+fig
+
+# ## A vorticity function for testing
 
 # In order to test the methods from [FFTW.jl](http://www.fftw.org), we define a certain vorticity function and its derivatives
 
@@ -32,13 +38,23 @@ dd_vort = - sin.(one.(y) * x') .* cos.(3y * one.(x)') - 9 * sin.(one.(y) * x') .
 
 nothing
 
-# We may visualize the vorticity as a surface,
+# We may visualize the vorticity as a surface:
 
-surface(x, y, vort, xlabel="x", ylabel="y", zlabel="vorticity")
+fig = Figure(backgroundcolor = RGBf(0.98, 0.98, 0.98))
 
-# or, better yet, as a heatmap.
+ax = Axis3(fig[1, 1], xlabel = "x", ylabel = "y", zlabel = "vorticity level", title = "Vorticity graph")
 
-heatmap(x, y, vort, xlabel="x", ylabel="y")
+surface!(ax, x, y, vort, colormap = :berlin)
+
+fig
+
+# Or, better yet, as a heatmap:
+
+fig, ax, plt = heatmap(x, y, vort, colormap = :berlin)
+
+ax = Axis(fig[1, 1], xlabel = "x", ylabel = "y", title = "Vorticity heatmap")
+
+fig
 
 # ## Testing the direct and inverse discrete Fourier transform
 
