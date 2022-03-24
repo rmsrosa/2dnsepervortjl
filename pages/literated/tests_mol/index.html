@@ -25178,7 +25178,7 @@ RU5ErkJggg==
 </svg>
 
 
-<p>We can check how the \(L^2\) distance of the vorticity to the steady state evolves.</p>
+<p>We can check how the <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>L</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">L^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span> distance of the vorticity to the steady state evolves.</p>
 <pre><code class="language-julia">error &#61; &#91;norm&#40;sol.u&#91;n&#93; .- vort_steady_hat&#41; * L/N / N for n in eachindex&#40;sol.u&#41;&#93;
 nothing</code></pre>
 <pre><code class="language-julia">plt1 &#61; plot&#40;sol.t, error, title&#61;&quot;Enstrophy convergence&quot;, titlefont &#61; 10, xaxis&#61;&quot;time&quot;, yaxis &#61; &quot;enstrophy&quot;, label&#61;false&#41;
@@ -26408,9 +26408,9 @@ M1515.08 1423.18 L2352.76 1423.18 L2352.76 906.192 L1515.08 906.192  Z
     </div> <!-- .books-container -->
 
     
-        <script src="/2dnsepervortjl/libs/katex/katex.min.js"></script>
-        <script src="/2dnsepervortjl/libs/katex/auto-render.min.js"></script>
-        <script>renderMathInElement(document.body)</script>
+        
+        
+        
     
 
     
