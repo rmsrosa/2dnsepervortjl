@@ -1,4 +1,4 @@
-# # Tests for FFTW plans
+# # FFTW plans
 
 # Here we test planning the FFTW and run some simple benchmarks.
 

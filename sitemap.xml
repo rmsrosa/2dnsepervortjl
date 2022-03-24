@@ -1,4 +1,82 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+<url>
+    <loc>pages/literated/tests_bilinear/index.html</loc>
+    <lastmod>2022-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/literated/tests_basic/index.html</loc>
+    <lastmod>2022-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/literated/tests_mol/index.html</loc>
+    <lastmod>2022-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>index.html</loc>
+    <lastmod>2022-03-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/stream/index.html</loc>
+    <lastmod>2022-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/basdevant/index.html</loc>
+    <lastmod>2022-03-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/literated/tests_fft_plan/index.html</loc>
+    <lastmod>2022-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/literated/benchmark_fft_plan/index.html</loc>
+    <lastmod>2022-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/literated/tests_steady_state_convergence/index.html</loc>
+    <lastmod>2022-03-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/references/index.html</loc>
+    <lastmod>2022-03-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/intro/index.html</loc>
+    <lastmod>2022-03-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/vorticity/index.html</loc>
+    <lastmod>2022-03-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
+<url>
+    <loc>pages/pressure-velocity/index.html</loc>
+    <lastmod>2022-03-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+</url>
 </urlset>

@@ -1,4 +1,4 @@
-# # Time-integration via method of lines
+# # Evolution via method of lines
 
 using FFTW
 using Plots

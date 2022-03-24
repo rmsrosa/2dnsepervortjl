@@ -1,12 +1,23 @@
-# # Testing different approximations for the bilinear term
+# # Approximations of the bilinear term
 
-# Ultimately we want to evolve, in time, an equation of the form $\omega_t = G(\omega)$. For the 2D NSE, $G$ is of the form $G(\omega) = g + \nu \Delta \omega + B(\omega)$, where $B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right)$, with $\mathbf{u} = (u(x, y), v(x, y))$ being the velocity field associated with the vorticity, i.e.  $\omega = \boldsymbol{\nabla} \times \mathbf{u} = v_x - u_y$.
+# Ultimately we want to evolve, in time, an equation of the form # $$
+#   \omega_t = G(\omega).
+# $$
+# For the 2D NSE, $G$ is of the form
+# $$
+#  G(\omega) = g + \nu \Delta \omega + B(\omega),
+# $$
+# where
+# $$
+#   B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right),
+# $$
+# with $\mathbf{u} = (u(x, y), v(x, y))$ being the velocity field associated with the vorticity, i.e.  $\omega = \boldsymbol{\nabla} \times \mathbf{u} = v_x - u_y$.
 
-# In spectral space, $\Delta \omega$ is just a diagonal operator, while $g$ is a given scalar field. The most computationally demanding term is $B(\omega)$.
+# In spectral space, $\Delta \omega$ is just a diagonal operator, while $g$ is a given scalar field, which are both easy to compute. The most computationally demanding term is $B(\omega)$.
 
 # Here, we test different ways of approximating $B(\omega)$.
 
-# Here are the packages we are gonna need.
+# The packages we are gonna need.
 
 using FFTW
 using Plots
@@ -46,7 +57,9 @@ function get_operators(N, κ₀)
     return Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat, DxsqDysq_hat, Dxy_hat
 end
 
-# Methods to generate a scalar field from a list of wavenumbers and amplitudes
+# ## Generation of a scalar field
+
+# Method to generate a scalar field from a list of wavenumbers and amplitudes:
 
 function field_from_modes(L, N, modes::Matrix{<:Integer}, amps::Matrix{<:Real})
     κ₀ = 2π/L
@@ -63,6 +76,8 @@ function field_from_modes(L, N, modes::Matrix{<:Integer}, amps::Matrix{<:Real})
     return field
 end
 
+# Method to randomly generate a scalar field from a given random number generator and a given number wavenumbers to be excited:
+
 function field_from_modes(rng::AbstractRNG, L, N, num_modes::Int)
 
     modes = rand(rng, 1:div(N,10), num_modes, 2)
@@ -72,6 +87,8 @@ function field_from_modes(rng::AbstractRNG, L, N, num_modes::Int)
 
     return field
 end
+
+# Method to randomly generate a scalar field from a given number wavenumbers to be excited:
 
 field_from_modes(L, N, num_modes::Int) = field_from_modes(Xoshiro(), L, N, num_modes)
 
@@ -99,6 +116,8 @@ function bilinear_naive(vort_hat, params)
     return bilin_hat
 end
 
+#
+
 function bilinear_auxs!(bilin_hat, vort_hat, params)
     operators, vars, auxs = params
 
@@ -124,6 +143,8 @@ function bilinear_auxs!(bilin_hat, vort_hat, params)
 
     return bilin_hat
 end
+
+#
 
 function bilinear_plan_brdcst!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
@@ -156,6 +177,8 @@ function bilinear_plan_brdcst!(bilin_hat, vort_hat, params)
     return bilin_hat
 end
 
+#
+
 function bilinear_Basdevant_brdcst(vort_hat, params)
     operators, vars = params
 
@@ -177,6 +200,8 @@ function bilinear_Basdevant_brdcst(vort_hat, params)
 
     return bilin_hat
 end
+
+#
 
 function bilinear_Basdevant_plan_brdcst!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
@@ -206,6 +231,8 @@ function bilinear_Basdevant_plan_brdcst!(bilin_hat, vort_hat, params)
 
     return bilin_hat
 end
+
+#
 
 function bilinear_Basdevant_plan_loop!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
@@ -245,6 +272,8 @@ function bilinear_Basdevant_plan_loop!(bilin_hat, vort_hat, params)
 
     return bilin_hat
 end
+
+#
 
 function bilinear_Basdevant_plan_doubleloop!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
@@ -321,7 +350,7 @@ vars = N, Nsub
 auxs = u_hat, v_hat, u, v, w, uv, v2u2, uv_hat, v2u2_hat
 plans = plan, plan_inv
 
-# ## Check for same result
+# ## Check results
 
 # As a first test, we check that all implementations return about the same vector
 

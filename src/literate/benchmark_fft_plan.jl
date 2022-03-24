@@ -1,4 +1,4 @@
-# # Benchmarking the different flags for planning the FFTW
+# # Benchmarking flags for FFTW plans
 
 # We test planning the FFTW with different flags.
 
