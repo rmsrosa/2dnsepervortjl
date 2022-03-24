@@ -1,4 +1,8 @@
-# # Testing FFTW for fully periodic fluid flows
+# # Testing different approximations for the rate-of-change law
+
+# Ultimately we want to evolve, in time, an equation of the form $u_t = F(u)$. For the 2D NSE, the most computationally demanding term is the bilinear one: $B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right)$, where $\mathbf{u} = (u(x, y), v(x, y))$ is the velocity field, which, in the two-dimensional periodic case, can easily be obtained from the vorticity $\omega = \boldsymbol{\nabla} \times \mathbf{u}$.
+
+# Here, we test different ways of approximating $B(u)$
 
 # Here are the packages we are gonna need.
 
@@ -13,7 +17,10 @@ using Random
 
 # ## Operators
 
+# We first define a method to build the various operators acting in spectral space:
+
 function get_operators(N, κ₀)
+    ## Differentiation in spectral space
     Dx_hat = im * κ₀ * [
         ifelse(k1 ≤ div(N, 2) + 1, k1 - 1, k1 - 1 - N) for k2 in 1:div(N, 2)+1, k1 in 1:N
     ]
@@ -24,19 +31,20 @@ function get_operators(N, κ₀)
         for k2 in 1:div(N, 2)+1, k1 in 1:N
     ]
 
-    # These are for recovering the velocity field from the vorticity
+    ## Recovering of the velocity field from the vorticity
     Hu_hat = - Dy_hat ./ Delta_hat
     Hu_hat[1, 1] = 0.0
     Hv_hat = Dx_hat ./ Delta_hat
     Hv_hat[1, 1] = 0.0
 
-    # These are for the Basdevant formulation
-    DxsqDysq_hat = Dx_hat .^2 .- Dy_hat.^2
+    ## For the Basdevant formulation
+    DxsqDysq_hat = Dx_hat.^2 .- Dy_hat.^2
     Dxy_hat = Dx_hat .* Dy_hat
+    
     return Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat, DxsqDysq_hat, Dxy_hat
 end
 
-# field from spectrum
+# Methods to generate a scalar field from a certain list of excitable wavenumbers.
 
 function field_from_spectrum(L, N, modes::Matrix{<:Integer}, amps::Matrix{<:Real})
     κ₀ = 2π/L
@@ -84,7 +92,7 @@ function step_naive!(vort_hat, dt, params)
             g_hat .- Dx_hat .* wu_hat .- Dy_hat .* wv_hat
         )
     )
-    # dealiasing
+    ## dealiasing
     vort_hat[div(Nsub,2) + 1:end, :] .= 0.0im
     vort_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return vort_hat
@@ -106,7 +114,7 @@ function step_Basdevant!(vort_hat, dt, params)
             g_hat .- DxsqDysq_hat .* uv_hat .- Dxy_hat .* v2u2_hat
         )
     )
-    # dealiasing
+    ## dealiasing
     vort_hat[div(Nsub,2) + 1:end, :] .= 0.0im
     vort_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return vort_hat
@@ -143,7 +151,7 @@ function step_Basdevant_plan!(vort_hat, dt, params)
             g_hat .- DxsqDysq_hat .* uv_hat .- Dxy_hat .* v2u2_hat
         )
     ) =#
-    # dealiasing
+    ## dealiasing
     vort_hat[div(Nsub,2) + 1:end, :] .= 0.0im
     vort_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return vort_hat
@@ -181,7 +189,7 @@ function step_Basdevant_plan_loop!(vort_hat, dt, params)
             )
         )
     end
-    # dealiasing
+    ## dealiasing
     @inbounds for j in 1:N, i in div(Nsub,2) + 1:div(N, 2) + 1
         vort_hat[i, j] = 0.0im
     end
@@ -225,7 +233,7 @@ function step_Basdevant_plan_doubleloop!(vort_hat, dt, params)
             )
         )
     end
-    # dealiasing
+    ## dealiasing
     @inbounds for j in 1:N, i in div(Nsub,2) + 1:M
         vort_hat[i, j] = 0.0im
     end
@@ -296,9 +304,9 @@ vort = irfft(vort_hat, N)
 println("Enstrophy convergence:")
 println(sum(abs2, vort_hat - vort_steady_hat) * (1/N)^4)
 for n in 1:num_steps
-    # step_naive!(vort_hat, dt, (operators, vars))
-    # step_Basdevant!(vort_hat, dt, (operators, vars))
-    # step_Basdevant_plan!(vort_hat, dt, (operators, vars, auxs, plans))
+    ## step_naive!(vort_hat, dt, (operators, vars))
+    ## step_Basdevant!(vort_hat, dt, (operators, vars))
+    ## step_Basdevant_plan!(vort_hat, dt, (operators, vars, auxs, plans))
     step_Basdevant_plan_doubleloop!(vort_hat, dt, (operators, vars, auxs, plans))
     if rem(n, 1000) == 0
         println(sum(abs2, vort_hat - vort_steady_hat) * (1/N)^4)
