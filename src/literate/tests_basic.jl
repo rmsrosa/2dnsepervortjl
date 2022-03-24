@@ -1,19 +1,20 @@
-# # Testing FFTW for fully periodic fluid flows
+# # Testing direct and inverse FFTW
 
-# Here we test the methods, in FFTW, to be used in the pseudo-spectral code described previously.
+# Here we test the methods, in FFTW, to be used in our pseudo-spectral code. It is mostly a sanity check.
 
 # We start by loading the packages we need:
 
 using FFTW
-using CairoMakie
+using WGLMakie
 using Test
 
-# ## The spatial domain and its spatial discretization
+# ## The spatial domain and its discretization
 
 # We consider a square domain of sides $L = 2\pi$, for which the smallest wavenumber is $\kappa_0 = 2\pi/L$.
 
 L = 2π
 κ₀ = 2π/L
+nothing
 
 # We set the number $N$ of points for the mesh in each direction, yielding a mesh $(x_i, y_j)_{i, j = 1,\ldots ,N}$, with $x_N = y_N = L$, and steps $x_{i+1} - x_i = L/N$, and $y_{j+1} - y_j = L/N$. Due to the periodicity, we don't need to store the values corresponding to $i = j = 0$.
 
@@ -21,7 +22,7 @@ N = 128
 x = y = (L/N):(L/N):L
 nothing
 
-# We may visualize the grid with a scatter plot, although if the mesh is too thin, we won't quite see the details. But if using GLMakie or WGLMakie, one can zoom in for a detailed view.
+# We may visualize the grid with a scatter plot, although if the mesh is too thin, we won't quite see the details. If using GLMakie or WGLMakie, one can zoom in for a detailed view.
 
 fig, ax, plt = scatter(vec(x .* one.(y)'), vec(one.(x) .* y'))
 
@@ -67,9 +68,38 @@ fig
 end
 nothing
 
+# We can also visualize the excited modes:
+
+κ_x = κ₀ * (0:1/N:1/2)
+κ_y = κ₀ * (0:1/N:1-1/N)
+
+vort_hat = rfft(vort)
+
+fig, ax, plt = heatmap(κ_x, κ_y, abs.(vort_hat).^2, colormap = :berlin)
+
+ax = Axis(fig[1, 1], xlabel = "k_x", ylabel = "k_y", title = "Enstrophy spectrum heatmap")
+
+fig
+
+# We have excited modes $(\pm 1, \pm 3)$. Due to the reality condition of the vorticity, the Fourier spectrum has an Hermitian symmetry around the origin. Using the real Fourier transform, only half of the modes need to be stored. In this case, only modes $(1, \pm 3)$ are retained. Moreover, the negative modes are shifted above. Due to the one-indexing of Julia, this means that modes $(\pm a, \pm b)$ are represented by indices $[a + 1, b + 1]$ and $[a + 1, N + 1 - b]$. In our case, the excited modes are associated with
+
+vort_hat[4, 2]
+
+# and
+
+vort_hat[4, 128]
+
+# These are the only excited modes, as we can check:
+
+for i in 1:div(N, 2) + 1, j in 1:N
+    if abs(vort_hat[i, j])^2 > eps()
+        println("vort_hat[$i, $j] = $(vort_hat[i, j])")
+    end
+end
+
 # ## Differential operators
 
-# In order to check the derivatives in spectral space, we define the following operators. Actually, they are just vectors, since derivatives in spectral space act as diagonal operators.
+# In order to check the derivatives in spectral space, we define the following operators. Actually, they are just vectors, since derivatives in spectral space act as diagonal operators. Hence, a straighforward Hadamard product suffices.
 
 Dx_hat = im * κ₀ * [ifelse(k1 ≤ N/2 + 1, k1 - 1, k1 - 1 - N) for k2 in 1:N/2+1, k1 in 1:N]
 Dy_hat = im * κ₀ * [k2 - 1 for k2 in 1:N/2+1, k1 in 1:N]
@@ -108,9 +138,9 @@ nothing
 
 # ## One-mode steady state
 
-# For forced-periodic flows, when the forcing function contains a single Fourier mode, there is a corresponding steady state vorticity function corresponding also to a single-mode in Fourier space, which is the same as that for the forcing. Only the energy is different.
+# For forced-periodic flows, when the forcing function contains a single Fourier mode, there is a corresponding steady state vorticity function corresponding also to that single-mode in Fourier space, only with a different amplitude.
 
-# In order to construct such pairs of forcing mode / steady state, we set define the viscosity of the flow, choose the mode to be forced and define the strength of that force:
+# In order to construct such pairs of forcing mode / steady state, we set the viscosity of the flow, choose the mode to be forced and define the strength of that force:
 
 ν = 1.0e-0 # viscosity
 κ = (x = 1, y = 2) # forced mode
@@ -181,3 +211,5 @@ nothing
     @test vort_steady_sol_hat ≈ vort_steady_hat
 end
 nothing
+
+# All seems good.

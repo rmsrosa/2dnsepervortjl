@@ -2,7 +2,9 @@
 
 # {{ get_title }}
 
-In this way, we need to apply the inverse fft to three functions, namely on $\hat\omega$, $\hat u$, $\hat v$, and then two direct fft, namely on $\omega u$ and $\omega v$. Alternatively, we can keep it as $\boldsymbol{\nabla}\omega \cdot \mathbf{u}$ and compute four ifft and one fft.
+Writing the nonlinear term as $\boldsymbol{\nabla}\cdot(\omega\mathbf{u})$, we need to apply the inverse fft to three functions, namely on $\hat\omega$, $\hat u$, $\hat v$, and then two direct fft, namely on $\omega u$ and $\omega v$, before taking the gradient in spectral space.
+
+Alternatively, we can keep it as $\boldsymbol{\nabla}\omega \cdot \mathbf{u}$ and compute four ifft and one fft.
 
 The best, however, is to perform the Basdevant reduction to reduce to four ffts (two inverse and two direct). This is obtained by writing
 $$

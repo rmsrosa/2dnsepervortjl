@@ -42,8 +42,13 @@ menu = [
         "pages/stream"
     ]
     "FFT Tools" => [
-        "src/literate/tests_basic.jl"      
+        "src/literate/tests_basic.jl"
+        "src/literate/tests_fft_plan.jl"
+        "src/literate/benchmark_fft_plan.jl"
+        "src/literate/tests_bilinear.jl"
+        "src/literate/tests_mol.jl"
     ]
+    "pages/references"
 ]
 +++
 
@@ -54,7 +59,7 @@ link_view_source = true
 link_download_notebook = true
 link_nbview_notebook = true
 link_binder_notebook = true
-exec_notebook = true
+exec_notebook = false
 website = "rmsrosa.github.io/2dnsepervortjl"
 +++
 

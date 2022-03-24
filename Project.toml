@@ -1,4 +1,5 @@
 [deps]
+BenchmarkPlots = "ab8c0f59-4072-4e0d-8f91-a91e1495eb26"
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 Franklin = "713c75ef-9fc9-4b05-94a9-213340da978e"
@@ -9,6 +10,7 @@ Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 Weave = "44d3d7a6-8a23-5bf8-98c5-b353f8df5ec9"
 

@@ -1,28 +1,25 @@
-@def title = "Testing FFTW for fully periodic fluid flows"
+@def title = "Testing direct and inverse FFTW"
 
 # {{ get_title }}
 
-Here we test the methods, in FFTW, to be used in the pseudo-spectral code described previously.
+Here we test the methods, in FFTW, to be used in our pseudo-spectral code. It is mostly a sanity check.
 
 We start by loading the packages we need:
 
 ````julia
 using FFTW
-using CairoMakie
+using WGLMakie
 using Test
 ````
 
-## The spatial domain and its spatial discretization
+## The spatial domain and its discretization
 
 We consider a square domain of sides $L = 2\pi$, for which the smallest wavenumber is $\kappa_0 = 2\pi/L$.
 
 ````julia
 L = 2π
 κ₀ = 2π/L
-````
-
-````
-1.0
+nothing
 ````
 
 We set the number $N$ of points for the mesh in each direction, yielding a mesh $(x_i, y_j)_{i, j = 1,\ldots ,N}$, with $x_N = y_N = L$, and steps $x_{i+1} - x_i = L/N$, and $y_{j+1} - y_j = L/N$. Due to the periodicity, we don't need to store the values corresponding to $i = j = 0$.
@@ -33,14 +30,41 @@ x = y = (L/N):(L/N):L
 nothing
 ````
 
-We may visualize the grid with a scatter plot, although if the mesh is too thin, we won't quite see the details. But if using GLMakie or WGLMakie, one can zoom in for a detailed view.
+We may visualize the grid with a scatter plot, although if the mesh is too thin, we won't quite see the details. If using GLMakie or WGLMakie, one can zoom in for a detailed view.
 
 ````julia
 fig, ax, plt = scatter(vec(x .* one.(y)'), vec(one.(x) .* y'))
 
 fig
 ````
-\fig{1209811589.png}
+
+~~~
+<div data-jscall-id="2"><script data-jscall-id="3" type="text/javascript">
+    function register_resize_handler(remote_origin) {
+        function resize_callback(event) {
+            if (event.origin !== remote_origin) {
+                return;
+            }
+            const uuid = event.data[0];
+            const width = event.data[1];
+            const height = event.data[2];
+            const iframe = document.getElementById('8297ebbb-f3ea-4cfb-b5f9-14d97240a8ac');
+            if (iframe) {
+                iframe.style.width = width + "px";
+                iframe.style.height = height + "px";
+            }
+        }
+        if (window.addEventListener) {
+            window.addEventListener("message", resize_callback, false);
+        } else if (window.attachEvent) {
+            window.attachEvent("onmessage", resize_callback);
+        }
+    }
+    register_resize_handler('http://127.0.0.1:9284')
+
+</script><iframe scrolling="no" id="8297ebbb-f3ea-4cfb-b5f9-14d97240a8ac" data-jscall-id="1" src="http://127.0.0.1:9284/8297ebbb-f3ea-4cfb-b5f9-14d97240a8ac" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+
+~~~
 
 ## A vorticity function for testing
 
@@ -66,7 +90,34 @@ surface!(ax, x, y, vort, colormap = :berlin)
 
 fig
 ````
-\fig{1413433971.png}
+
+~~~
+<div data-jscall-id="5"><script data-jscall-id="6" type="text/javascript">
+    function register_resize_handler(remote_origin) {
+        function resize_callback(event) {
+            if (event.origin !== remote_origin) {
+                return;
+            }
+            const uuid = event.data[0];
+            const width = event.data[1];
+            const height = event.data[2];
+            const iframe = document.getElementById('6bc3c87b-25f9-4b19-8ea2-33c47338eece');
+            if (iframe) {
+                iframe.style.width = width + "px";
+                iframe.style.height = height + "px";
+            }
+        }
+        if (window.addEventListener) {
+            window.addEventListener("message", resize_callback, false);
+        } else if (window.attachEvent) {
+            window.attachEvent("onmessage", resize_callback);
+        }
+    }
+    register_resize_handler('http://127.0.0.1:9284')
+
+</script><iframe scrolling="no" id="6bc3c87b-25f9-4b19-8ea2-33c47338eece" data-jscall-id="4" src="http://127.0.0.1:9284/6bc3c87b-25f9-4b19-8ea2-33c47338eece" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+
+~~~
 
 Or, better yet, as a heatmap:
 
@@ -77,7 +128,34 @@ ax = Axis(fig[1, 1], xlabel = "x", ylabel = "y", title = "Vorticity heatmap")
 
 fig
 ````
-\fig{795613348.png}
+
+~~~
+<div data-jscall-id="8"><script data-jscall-id="9" type="text/javascript">
+    function register_resize_handler(remote_origin) {
+        function resize_callback(event) {
+            if (event.origin !== remote_origin) {
+                return;
+            }
+            const uuid = event.data[0];
+            const width = event.data[1];
+            const height = event.data[2];
+            const iframe = document.getElementById('24d36028-93a3-48fd-8c3a-723743ab44c0');
+            if (iframe) {
+                iframe.style.width = width + "px";
+                iframe.style.height = height + "px";
+            }
+        }
+        if (window.addEventListener) {
+            window.addEventListener("message", resize_callback, false);
+        } else if (window.attachEvent) {
+            window.attachEvent("onmessage", resize_callback);
+        }
+    }
+    register_resize_handler('http://127.0.0.1:9284')
+
+</script><iframe scrolling="no" id="24d36028-93a3-48fd-8c3a-723743ab44c0" data-jscall-id="7" src="http://127.0.0.1:9284/24d36028-93a3-48fd-8c3a-723743ab44c0" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+
+~~~
 
 ## Testing the direct and inverse discrete Fourier transform
 
@@ -98,9 +176,88 @@ check composition `irfft ∘ rfft` |    1      1
 
 ````
 
+We can also visualize the excited modes:
+
+````julia
+κ_x = κ₀ * (0:1/N:1/2)
+κ_y = κ₀ * (0:1/N:1-1/N)
+
+vort_hat = rfft(vort)
+
+fig, ax, plt = heatmap(κ_x, κ_y, abs.(vort_hat).^2, colormap = :berlin)
+
+ax = Axis(fig[1, 1], xlabel = "k_x", ylabel = "k_y", title = "Enstrophy spectrum heatmap")
+
+fig
+````
+
+~~~
+<div data-jscall-id="11"><script data-jscall-id="12" type="text/javascript">
+    function register_resize_handler(remote_origin) {
+        function resize_callback(event) {
+            if (event.origin !== remote_origin) {
+                return;
+            }
+            const uuid = event.data[0];
+            const width = event.data[1];
+            const height = event.data[2];
+            const iframe = document.getElementById('f67f7111-40d0-46b2-a96c-9a55f7aec38b');
+            if (iframe) {
+                iframe.style.width = width + "px";
+                iframe.style.height = height + "px";
+            }
+        }
+        if (window.addEventListener) {
+            window.addEventListener("message", resize_callback, false);
+        } else if (window.attachEvent) {
+            window.attachEvent("onmessage", resize_callback);
+        }
+    }
+    register_resize_handler('http://127.0.0.1:9284')
+
+</script><iframe scrolling="no" id="f67f7111-40d0-46b2-a96c-9a55f7aec38b" data-jscall-id="10" src="http://127.0.0.1:9284/f67f7111-40d0-46b2-a96c-9a55f7aec38b" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+
+~~~
+
+We have excited modes $(\pm 1, \pm 3)$. Due to the reality condition of the vorticity, the Fourier spectrum has an Hermitian symmetry around the origin. Using the real Fourier transform, only half of the modes need to be stored. In this case, only modes $(1, \pm 3)$ are retained. Moreover, the negative modes are shifted above. Due to the one-indexing of Julia, this means that modes $(\pm a, \pm b)$ are represented by indices $[a + 1, b + 1]$ and $[a + 1, N + 1 - b]$. In our case, the excited modes are associated with
+
+````julia
+vort_hat[4, 2]
+````
+
+````
+799.089958978059 - 4017.2965085316328im
+````
+
+and
+
+````julia
+vort_hat[4, 128]
+````
+
+````
+-401.4782067898798 + 4076.2766404493186im
+````
+
+These are the only excited modes, as we can check:
+
+````julia
+for i in 1:div(N, 2) + 1, j in 1:N
+    if abs(vort_hat[i, j])^2 > eps()
+        println("vort_hat[$i, $j] = $(vort_hat[i, j])")
+    end
+end
+````
+
+````
+vort_hat[4, 2] = 799.089958978059 - 4017.2965085316328im
+vort_hat[4, 128] = -401.4782067898798 + 4076.2766404493186im
+
+````
+
 ## Differential operators
 
-In order to check the derivatives in spectral space, we define the following operators. Actually, they are just vectors, since derivatives in spectral space act as diagonal operators.
+In order to check the derivatives in spectral space, we define the following operators. Actually, they are just vectors, since derivatives in spectral space act as diagonal operators. Hence, a straighforward Hadamard product suffices.
 
 ````julia
 Dx_hat = im * κ₀ * [ifelse(k1 ≤ N/2 + 1, k1 - 1, k1 - 1 - N) for k2 in 1:N/2+1, k1 in 1:N]
@@ -149,9 +306,9 @@ Check operators |    5      5
 
 ## One-mode steady state
 
-For forced-periodic flows, when the forcing function contains a single Fourier mode, there is a corresponding steady state vorticity function corresponding also to a single-mode in Fourier space, which is the same as that for the forcing. Only the energy is different.
+For forced-periodic flows, when the forcing function contains a single Fourier mode, there is a corresponding steady state vorticity function corresponding also to that single-mode in Fourier space, only with a different amplitude.
 
-In order to construct such pairs of forcing mode / steady state, we set define the viscosity of the flow, choose the mode to be forced and define the strength of that force:
+In order to construct such pairs of forcing mode / steady state, we set the viscosity of the flow, choose the mode to be forced and define the strength of that force:
 
 ````julia
 ν = 1.0e-0 # viscosity
@@ -238,4 +395,6 @@ Test Summary:                         | Pass  Total
 Check single-mode stable steady state |    5      5
 
 ````
+
+All seems good.
 

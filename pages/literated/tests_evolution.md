@@ -1,11 +1,14 @@
-# # Testing different approximations for the rate-of-change law
+@def title = "Testing different approximations for the rate-of-change law"
 
-# Ultimately we want to evolve, in time, an equation of the form $u_t = F(u)$. For the 2D NSE, the most computationally demanding term is the bilinear one: $B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right)$, where $\mathbf{u} = (u(x, y), v(x, y))$ is the velocity field, which, in the two-dimensional periodic case, can easily be obtained from the vorticity $\omega = \boldsymbol{\nabla} \times \mathbf{u}$.
+# {{ get_title }}
 
-# Here, we test different ways of approximating $B(u)$
+Ultimately we want to evolve, in time, an equation of the form $u_t = F(u)$. For the 2D NSE, the most computationally demanding term is the bilinear one: $B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right)$, where $\mathbf{u} = (u(x, y), v(x, y))$ is the velocity field, which, in the two-dimensional periodic case, can easily be obtained from the vorticity $\omega = \boldsymbol{\nabla} \times \mathbf{u}$.
 
-# Here are the packages we are gonna need.
+Here, we test different ways of approximating $B(u)$
 
+Here are the packages we are gonna need.
+
+````julia
 using FFTW
 using Plots
 using LinearAlgebra: mul!
@@ -14,13 +17,20 @@ using BenchmarkTools
 using Random
 
 @info "Threads: $(FFTW.nthreads())"
+````
 
-# ## Operators
+````
+[ Info: Threads: 8
 
-# We first define a method to build the various operators acting in spectral space:
+````
 
+## Operators
+
+We first define a method to build the various operators acting in spectral space:
+
+````julia
 function get_operators(N, κ₀)
-    ## Differentiation in spectral space
+    # Differentiation in spectral space
     Dx_hat = im * κ₀ * [
         ifelse(k1 ≤ div(N, 2) + 1, k1 - 1, k1 - 1 - N) for k2 in 1:div(N, 2)+1, k1 in 1:N
     ]
@@ -31,21 +41,27 @@ function get_operators(N, κ₀)
         for k2 in 1:div(N, 2)+1, k1 in 1:N
     ]
 
-    ## Recovering of the velocity field from the vorticity
+    # Recovering of the velocity field from the vorticity
     Hu_hat = - Dy_hat ./ Delta_hat
     Hu_hat[1, 1] = 0.0
     Hv_hat = Dx_hat ./ Delta_hat
     Hv_hat[1, 1] = 0.0
 
-    ## For the Basdevant formulation
+    # For the Basdevant formulation
     DxsqDysq_hat = Dx_hat.^2 .- Dy_hat.^2
     Dxy_hat = Dx_hat .* Dy_hat
-    
+
     return Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat, DxsqDysq_hat, Dxy_hat
 end
+````
 
-# Methods to generate a scalar field from a certain list of excitable wavenumbers.
+````
+get_operators (generic function with 1 method)
+````
 
+Methods to generate a scalar field from a certain list of excitable wavenumbers.
+
+````julia
 function field_from_spectrum(L, N, modes::Matrix{<:Integer}, amps::Matrix{<:Real})
     κ₀ = 2π/L
     x = y = (L/N):(L/N):L
@@ -72,11 +88,17 @@ function field_from_spectrum(rng::AbstractRNG, L, N, num_modes::Int)
 end
 
 field_from_spectrum(L, N, num_modes::Int) = field_from_spectrum(Xoshiro(), L, N, num_modes)
+````
 
-# Evolution steps
+````
+field_from_spectrum (generic function with 3 methods)
+````
 
+Evolution steps
+
+````julia
 function step_naive!(vort_hat, dt, params)
-    operators, vars = params    
+    operators, vars = params
     Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat,
         DxsqDysq_hat, Dxy_hat, Exp_nu_dt_Delta_hat = operators
     g_hat, N, Nsub = vars
@@ -87,19 +109,19 @@ function step_naive!(vort_hat, dt, params)
     vort = irfft(vort_hat, N)
     wu_hat = rfft(vort .* u)
     wv_hat = rfft(vort .* v)
-    vort_hat .= Exp_nu_dt_Delta_hat .* ( 
-        vort_hat .+ dt * ( 
+    vort_hat .= Exp_nu_dt_Delta_hat .* (
+        vort_hat .+ dt * (
             g_hat .- Dx_hat .* wu_hat .- Dy_hat .* wv_hat
         )
     )
-    ## dealiasing
+    # dealiasing
     vort_hat[div(Nsub,2) + 1:end, :] .= 0.0im
     vort_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return vort_hat
 end
 
 function step_Basdevant!(vort_hat, dt, params)
-    operators, vars = params    
+    operators, vars = params
     Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat,
         DxsqDysq_hat, Dxy_hat, Exp_nu_dt_Delta_hat = operators
     g_hat, N, Nsub = vars
@@ -109,12 +131,12 @@ function step_Basdevant!(vort_hat, dt, params)
     v = irfft(v_hat, N)
     uv_hat = rfft(u .* v)
     v2u2_hat = rfft(v.^2 - u.^2)
-    vort_hat .= Exp_nu_dt_Delta_hat .* ( 
-        vort_hat .+ dt * ( 
+    vort_hat .= Exp_nu_dt_Delta_hat .* (
+        vort_hat .+ dt * (
             g_hat .- DxsqDysq_hat .* uv_hat .- Dxy_hat .* v2u2_hat
         )
     )
-    ## dealiasing
+    # dealiasing
     vort_hat[div(Nsub,2) + 1:end, :] .= 0.0im
     vort_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return vort_hat
@@ -122,7 +144,7 @@ end
 
 function step_Basdevant_plan!(vort_hat, dt, params)
     operators, vars, auxs, plans = params
-    
+
     Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat,
         DxsqDysq_hat, Dxy_hat, Exp_nu_dt_Delta_hat = operators
     g_hat, N, Nsub = vars
@@ -140,18 +162,18 @@ function step_Basdevant_plan!(vort_hat, dt, params)
     mul!(uv_hat, plan, uv)
     mul!(v2u2_hat, plan, v2u2)
 
-    @. vort_hat = Exp_nu_dt_Delta_hat * ( 
-        vort_hat + dt * ( 
+    @. vort_hat = Exp_nu_dt_Delta_hat * (
+        vort_hat + dt * (
             g_hat - DxsqDysq_hat * uv_hat - Dxy_hat * v2u2_hat
         )
     )
 
-#=     vort_hat .= Exp_nu_dt_Delta_hat .* ( 
-        vort_hat .+ dt .* ( 
+#=     vort_hat .= Exp_nu_dt_Delta_hat .* (
+        vort_hat .+ dt .* (
             g_hat .- DxsqDysq_hat .* uv_hat .- Dxy_hat .* v2u2_hat
         )
     ) =#
-    ## dealiasing
+    # dealiasing
     vort_hat[div(Nsub,2) + 1:end, :] .= 0.0im
     vort_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return vort_hat
@@ -159,7 +181,7 @@ end
 
 function step_Basdevant_plan_loop!(vort_hat, dt, params)
     operators, vars, auxs, plans = params
-    
+
     Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat,
         DxsqDysq_hat, Dxy_hat, Exp_nu_dt_Delta_hat = operators
     g_hat, N, Nsub = vars
@@ -183,13 +205,13 @@ function step_Basdevant_plan_loop!(vort_hat, dt, params)
     mul!(v2u2_hat, plan, v2u2)
 
     for i in eachindex(vort_hat)
-        vort_hat[i] = Exp_nu_dt_Delta_hat[i] * ( 
-            vort_hat[i] + dt * ( 
+        vort_hat[i] = Exp_nu_dt_Delta_hat[i] * (
+            vort_hat[i] + dt * (
                 g_hat[i] - DxsqDysq_hat[i] * uv_hat[i] - Dxy_hat[i] * v2u2_hat[i]
             )
         )
     end
-    ## dealiasing
+    # dealiasing
     @inbounds for j in 1:N, i in div(Nsub,2) + 1:div(N, 2) + 1
         vort_hat[i, j] = 0.0im
     end
@@ -201,7 +223,7 @@ end
 
 function step_Basdevant_plan_doubleloop!(vort_hat, dt, params)
     operators, vars, auxs, plans = params
-    
+
     Dx_hat, Dy_hat, Delta_hat, Hu_hat, Hv_hat,
         DxsqDysq_hat, Dxy_hat, Exp_nu_dt_Delta_hat = operators
     g_hat, N, Nsub = vars
@@ -227,13 +249,13 @@ function step_Basdevant_plan_doubleloop!(vort_hat, dt, params)
     mul!(v2u2_hat, plan, v2u2)
 
     for j in 1:N, i in 1:M
-        vort_hat[i, j] = Exp_nu_dt_Delta_hat[i, j] * ( 
-            vort_hat[i, j] + dt * ( 
+        vort_hat[i, j] = Exp_nu_dt_Delta_hat[i, j] * (
+            vort_hat[i, j] + dt * (
                 g_hat[i, j] - DxsqDysq_hat[i, j] * uv_hat[i, j] - Dxy_hat[i, j] * v2u2_hat[i, j]
             )
         )
     end
-    ## dealiasing
+    # dealiasing
     @inbounds for j in 1:N, i in div(Nsub,2) + 1:M
         vort_hat[i, j] = 0.0im
     end
@@ -242,9 +264,15 @@ function step_Basdevant_plan_doubleloop!(vort_hat, dt, params)
     end
     return vort_hat
 end
+````
 
-# ## The spatial domain
+````
+step_Basdevant_plan_doubleloop! (generic function with 1 method)
+````
 
+## The spatial domain
+
+````julia
 L = 2π
 κ₀ = 2π/L
 N = 128
@@ -304,9 +332,9 @@ vort = irfft(vort_hat, N)
 println("Enstrophy convergence:")
 println(sum(abs2, vort_hat - vort_steady_hat) * (1/N)^4)
 for n in 1:num_steps
-    ## step_naive!(vort_hat, dt, (operators, vars))
-    ## step_Basdevant!(vort_hat, dt, (operators, vars))
-    ## step_Basdevant_plan!(vort_hat, dt, (operators, vars, auxs, plans))
+    # step_naive!(vort_hat, dt, (operators, vars))
+    # step_Basdevant!(vort_hat, dt, (operators, vars))
+    # step_Basdevant_plan!(vort_hat, dt, (operators, vars, auxs, plans))
     step_Basdevant_plan_doubleloop!(vort_hat, dt, (operators, vars, auxs, plans))
     if rem(n, 1000) == 0
         println(sum(abs2, vort_hat - vort_steady_hat) * (1/N)^4)
@@ -329,7 +357,7 @@ display(surface(x, y, vort - vort_steady, xlabel="x", ylabel="y", zlabel="error"
 @info "step_Basdevant_plan_doubleloop!"
 @btime step_Basdevant_plan_doubleloop!(vh, τ, p) setup = (vh = copy(vort_hat); τ = $dt; p = $(operators, vars, auxs, plans));
 
-#= 
+#=
 [ Info: step_naive!
   261.500 μs (211 allocations: 2.16 MiB)
 [ Info: step_Basdevant!
@@ -341,3 +369,121 @@ display(surface(x, y, vort - vort_steady, xlabel="x", ylabel="y", zlabel="error"
 [ Info: step_Basdevant_plan_doubleloop!
   137.000 μs (0 allocations: 0 bytes)
 =#
+````
+
+````
+Enstrophy convergence:
+45769.07527692402
+1682.0109178224593
+92.56640651951113
+20.82659804740208
+15.075064949968283
+13.015325120499924
+11.417457454560534
+10.049091037017913
+8.863795234009723
+7.83349679955828
+6.935609024892442
+6.15121794702641
+5.464369373098197
+4.8615680680529705
+4.331373750791764
+3.8640665744667873
+3.4513688629483763
+3.086213527040771
+2.762551339102698
+2.4751905168006787
+2.219663124709171
+1.9921137061745977
+1.789206328077821
+1.608046872527756
+1.446117956289445
+1.3012243148546252
+1.1714468666951623
+1.05510398640547
+0.9507187737550964
+0.8569913183337483
+0.7727751343212599
+0.6970570835697061
+0.6289402231753729
+0.5676291106355554
+0.5124171793266524
+0.46267586252840953
+0.41784519811966153
+0.3774256904835555
+0.3409712428030012
+0.3080830032039092
+0.2784039932607906
+0.2516144081528566
+0.22742749501304316
+0.20558593037230266
+0.18585862957711938
+0.16803793106735843
+0.151937106786084
+0.13738815703298188
+0.12423985399852298
+0.11235600321576472
+0.10161389639614761
+0.09190293270268658
+0.08312338856428193
+0.07518531873557793
+0.0680075735302151
+0.06151691906120483
+0.05564724896030896
+0.0503388774600379
+0.045537904941747746
+0.04119564811009055
+0.03726812787191372
+0.03371560879685993
+0.030502184734415173
+0.027595405772347932
+0.02496594225649205
+0.022587282061966404
+0.020435457719869144
+0.01848880036870609
+0.01672771782262538
+0.015134494334380227
+0.013693109884467721
+0.012389077053110827
+0.011209293732117591
+0.010141910112146381
+0.00917620854012427
+0.008302494983759819
+0.007512000967216404
+0.006796794955783223
+0.006149702269301356
+0.005564232695475939
+0.005034515056201537
+0.004555238053649847
+0.0041215967890302465
+0.0037292444064149256
+0.0033742483675359546
+0.0030530509116280676
+0.002762433297768564
+0.0024994834662438394
+0.002261566790692854
+0.0020462996245326982
+0.001851525373811395
+0.0016752928544706788
+0.001515836715317604
+0.0013715597290502814
+0.001241016772683997
+0.0011229003358828708
+0.0010160274111992002
+0.0009193276342224482
+0.0008318325542881731
+0.0007526659278260432
+0.0006810349367549992
+[ Info: step_naive!
+  445.500 μs (195 allocations: 2.16 MiB)
+[ Info: step_Basdevant!
+  368.208 μs (162 allocations: 2.03 MiB)
+[ Info: step_Basdevant_plan!
+  176.458 μs (0 allocations: 0 bytes)
+[ Info: step_Basdevant_plan_loop!
+  170.291 μs (0 allocations: 0 bytes)
+[ Info: step_Basdevant_plan_doubleloop!
+  169.666 μs (0 allocations: 0 bytes)
+
+````
+

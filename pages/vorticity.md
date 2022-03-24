@@ -32,7 +32,7 @@ As for the remaining term, we write
 $$
 \boldsymbol{\nabla} \times ((\mathbf{u}\cdot\boldsymbol{\nabla})\mathbf{u}) = \boldsymbol{\nabla} \times \left( \begin{matrix} uu_x + vu_y \\ uv_x + vv_y \\ 0 \end{matrix}  \right)
 $$
-Considering only the third component since the others vanish, we find
+The first two components of this curl vanish, while the last component is given by
 $$
 \begin{align*}
 (uv_x + vv_y)_x - (uu_x + vu_y)_y & = u_xv_x + uv_{xx} + v_xv_y + vv_{yx} - u_yu_x - uu_{xy} - v_yu_y  -vu_{yy} \\
@@ -51,4 +51,4 @@ $$
 \boldsymbol{\nabla}\cdot(\omega\mathbf{u}) = \boldsymbol{\nabla}\omega \cdot \mathbf{u} + \omega \boldsymbol{\nabla}\cdot \mathbf{u} = \boldsymbol{\nabla}\omega \cdot \mathbf{u}.
 $$
 
-But we keep the form $\boldsymbol{\nabla}\cdot(\omega\mathbf{u}),$ in order to apply the Basdevant reduction, which requires less Fourier transforms; see [{{get_title /pages/basdevant}}](/pages/basdevand).
+But we keep the form $\boldsymbol{\nabla}\cdot(\omega\mathbf{u}),$ in order to apply the Basdevant reduction, which requires less Fourier transforms; see {{link_section pages/basdevant}}.

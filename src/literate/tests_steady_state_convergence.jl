@@ -1,6 +1,8 @@
-# # Testing FFTW for fully periodic fluid flows
+# # Testing time step and convergence to steady state
 
-# Here we test the convergence in the case of a known globally stable steady state.
+# Here we test the convergence in the case of a known globally stable steady state, made of a single mode and associated with a corresponding single-mode forcing.
+
+# In order to check that, we implement a simple (and far from optimal) time-step algorithm. We'll improve that later.
 
 # Here are the packages we are gonna need.
 
@@ -9,7 +11,7 @@ using Plots
 using Test
 using Random
 
-# ## The spatial domain
+# ## The spatial domain and discretization
 
 L = 2π
 κ₀ = 2π/L
@@ -44,7 +46,7 @@ vort_steady = 2κ₀^2 * sum(abs2, κ) * (
 )
 vort_steady_hat = rfft(vort_steady)
 
-display(heatmap(x, y, vort_steady, xlabel="x", ylabel="y", title="steady state vorticity", titlefont=12))
+heatmap(x, y, vort_steady, xlabel="x", ylabel="y", title="steady state vorticity", titlefont=12)
 
 g_steady = ν * (
     2α.re * κ₀^4 * sum(abs2, κ)^2 * cos.(κ₀ * (κ.x * one.(y) * x' + κ.y * y * one.(x)'))
@@ -52,7 +54,7 @@ g_steady = ν * (
 )
 g_steady_hat = rfft(g_steady)
 
-display(heatmap(x, y, g_steady, xlabel="x", ylabel="y", title="forcing term", titlefont=12))
+heatmap(x, y, g_steady, xlabel="x", ylabel="y", title="forcing term", titlefont=12)
 
 Gr = sqrt(
     2 * sum(abs2, α) / κ₀^4 / ν^4
@@ -76,7 +78,7 @@ function step!(vort_hat, dt, params)
             g_hat .- Dx_hat .* wu_hat .- Dy_hat .* wv_hat
         )
     )
-    # dealiasing
+    ## dealiasing
     vort_hat[div(Nsub,2) + 1:end, :] .= 0.0im
     vort_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return vort_hat
@@ -103,7 +105,7 @@ vort_init = sum(
 
 vort_init_hat = rfft(vort_init)
 
-display(heatmap(x, y, vort_init, xlabel="x", ylabel="y", title="initial vorticity", titlefont=12))
+heatmap(x, y, vort_init, xlabel="x", ylabel="y", title="initial vorticity", titlefont=12)
 
 # Time evolution setup
 
@@ -125,15 +127,15 @@ for n in 1:num_steps
 end
 
 vort = irfft(vort_hat, N)
-display(heatmap(x, y, vort, xlabel="x", ylabel="y", title="vorticity", titlefont=12))
+heatmap(x, y, vort, xlabel="x", ylabel="y", title="vorticity", titlefont=12)
 
-display(surface(x, y, vort - vort_steady, xlabel="x", ylabel="y", zlabel="error", title="difference `vort_final .- vort_steady`", titlefont=12))
+surface(x, y, vort - vort_steady, xlabel="x", ylabel="y", zlabel="error", title="difference `vort_final .- vort_steady`", titlefont=12)
 
 # The difference from the actual fixed point to the limit value of the discretized method decreases with dt
-## Eg. think of `̇ẋ = - a (x - xₑ)`, where `a>0` and `xₑ` is the actual equilibrium.
-## Discretizing it with `x^{n+1}exp(at_{n+1}) - x^n exp(at_n) = dt a exp(at_n)` yields the fixed point
-## `x̄ = (exp(-a dt) * dt * a) / (1 - exp(-a * dt))`.
-## We have `x̄ - xₑ → 0` as `dt → 0`.
-##
-## `f(a, k) = k * a * exp(-a * k) / (1 - exp(-a * k))`
+# Eg. think of `̇ẋ = - a (x - xₑ)`, where `a>0` and `xₑ` is the actual equilibrium.
+# Discretizing it with `x^{n+1}exp(at_{n+1}) - x^n exp(at_n) = dt a exp(at_n)` yields the fixed point
+# `x̄ = (exp(-a dt) * dt * a) / (1 - exp(-a * dt))`.
+# We have `x̄ - xₑ → 0` as `dt → 0`.
+#
+# `f(a, k) = k * a * exp(-a * k) / (1 - exp(-a * k))`
 
