@@ -1,4 +1,4 @@
-@def title = "The pressure-velocity formulation"
+@def title = "Pressure-velocity formulation"
 
 # {{ get_title }}
 

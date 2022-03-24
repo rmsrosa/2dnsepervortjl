@@ -1,3 +1,3 @@
-@def title = "Stream Function"
+@def title = "Stream function"
 
 # {{ get_title }}

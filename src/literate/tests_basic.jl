@@ -1,4 +1,4 @@
-# # Testing direct and inverse FFTW
+# # Direct and inverse FFTW
 
 # Here we test the methods, in FFTW, to be used in our pseudo-spectral code. It is mostly a sanity check.
 

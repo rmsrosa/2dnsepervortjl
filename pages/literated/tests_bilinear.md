@@ -1,14 +1,25 @@
-@def title = "Testing different approximations for the bilinear term"
+@def title = "Approximations of the bilinear term"
 
 # {{ get_title }}
 
-Ultimately we want to evolve, in time, an equation of the form $\omega_t = G(\omega)$. For the 2D NSE, $G$ is of the form $G(\omega) = g + \nu \Delta \omega + B(\omega)$, where $B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right)$, with $\mathbf{u} = (u(x, y), v(x, y))$ being the velocity field associated with the vorticity, i.e.  $\omega = \boldsymbol{\nabla} \times \mathbf{u} = v_x - u_y$.
+Ultimately we want to evolve, in time, an equation of the form # $$
+  \omega_t = G(\omega).
+$$
+For the 2D NSE, $G$ is of the form
+$$
+ G(\omega) = g + \nu \Delta \omega + B(\omega),
+$$
+where
+$$
+  B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right),
+$$
+with $\mathbf{u} = (u(x, y), v(x, y))$ being the velocity field associated with the vorticity, i.e.  $\omega = \boldsymbol{\nabla} \times \mathbf{u} = v_x - u_y$.
 
-In spectral space, $\Delta \omega$ is just a diagonal operator, while $g$ is a given scalar field. The most computationally demanding term is $B(\omega)$.
+In spectral space, $\Delta \omega$ is just a diagonal operator, while $g$ is a given scalar field, which are both easy to compute. The most computationally demanding term is $B(\omega)$.
 
 Here, we test different ways of approximating $B(\omega)$.
 
-Here are the packages we are gonna need.
+The packages we are gonna need.
 
 ````julia
 using FFTW
@@ -61,7 +72,9 @@ end
 get_operators (generic function with 1 method)
 ````
 
-Methods to generate a scalar field from a list of wavenumbers and amplitudes
+## Generation of a scalar field
+
+Method to generate a scalar field from a list of wavenumbers and amplitudes:
 
 ````julia
 function field_from_modes(L, N, modes::Matrix{<:Integer}, amps::Matrix{<:Real})
@@ -78,7 +91,15 @@ function field_from_modes(L, N, modes::Matrix{<:Integer}, amps::Matrix{<:Real})
     )
     return field
 end
+````
 
+````
+field_from_modes (generic function with 1 method)
+````
+
+Method to randomly generate a scalar field from a given random number generator and a given number wavenumbers to be excited:
+
+````julia
 function field_from_modes(rng::AbstractRNG, L, N, num_modes::Int)
 
     modes = rand(rng, 1:div(N,10), num_modes, 2)
@@ -88,7 +109,15 @@ function field_from_modes(rng::AbstractRNG, L, N, num_modes::Int)
 
     return field
 end
+````
 
+````
+field_from_modes (generic function with 2 methods)
+````
+
+Method to randomly generate a scalar field from a given number wavenumbers to be excited:
+
+````julia
 field_from_modes(L, N, num_modes::Int) = field_from_modes(Xoshiro(), L, N, num_modes)
 ````
 
@@ -120,7 +149,13 @@ function bilinear_naive(vort_hat, params)
     bilin_hat[:, div(Nsub,2) + 1:div(N,2) + div(Nsub,2)] .= 0.0im
     return bilin_hat
 end
+````
 
+````
+bilinear_naive (generic function with 1 method)
+````
+
+````julia
 function bilinear_auxs!(bilin_hat, vort_hat, params)
     operators, vars, auxs = params
 
@@ -146,7 +181,13 @@ function bilinear_auxs!(bilin_hat, vort_hat, params)
 
     return bilin_hat
 end
+````
 
+````
+bilinear_auxs! (generic function with 1 method)
+````
+
+````julia
 function bilinear_plan_brdcst!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
 
@@ -177,7 +218,13 @@ function bilinear_plan_brdcst!(bilin_hat, vort_hat, params)
 
     return bilin_hat
 end
+````
 
+````
+bilinear_plan_brdcst! (generic function with 1 method)
+````
+
+````julia
 function bilinear_Basdevant_brdcst(vort_hat, params)
     operators, vars = params
 
@@ -199,7 +246,13 @@ function bilinear_Basdevant_brdcst(vort_hat, params)
 
     return bilin_hat
 end
+````
 
+````
+bilinear_Basdevant_brdcst (generic function with 1 method)
+````
+
+````julia
 function bilinear_Basdevant_plan_brdcst!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
 
@@ -228,7 +281,13 @@ function bilinear_Basdevant_plan_brdcst!(bilin_hat, vort_hat, params)
 
     return bilin_hat
 end
+````
 
+````
+bilinear_Basdevant_plan_brdcst! (generic function with 1 method)
+````
+
+````julia
 function bilinear_Basdevant_plan_loop!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
 
@@ -267,7 +326,13 @@ function bilinear_Basdevant_plan_loop!(bilin_hat, vort_hat, params)
 
     return bilin_hat
 end
+````
 
+````
+bilinear_Basdevant_plan_loop! (generic function with 1 method)
+````
+
+````julia
 function bilinear_Basdevant_plan_doubleloop!(bilin_hat, vort_hat, params)
     operators, vars, auxs, plans = params
 
@@ -388,7 +453,7 @@ plans = plan, plan_inv
           (rdft-rank0-ip-sq/2-x16-x16)))))))
 ````
 
-## Check for same result
+## Check results
 
 As a first test, we check that all implementations return about the same vector
 
@@ -471,7 +536,7 @@ sum(bilin_naive .* vort) * (L / N)^2
 ````
 
 ````
--2.941371322002816e-6
+-3.5296455864033787e-6
 ````
 
 In spectral space, due to Parseval's identity, this translates to the following (except we need to correct for some indices...)
@@ -487,7 +552,7 @@ M = iseven(N) ? div(N, 2) : div(N, 2) + 1
 ````
 
 ````
--1.3719489277453497e-6 - 1.5199225608609413e10im
+-7.17626660933107e-6 + 9.440994952260796e8im
 ````
 
 Hmm, something is wrong...
@@ -519,19 +584,19 @@ Hmm, something is wrong...
 
 ````
 [ Info: bilinear_naive
-  1.389 ms (193 allocations: 8.05 MiB)
+  1.416 ms (193 allocations: 8.05 MiB)
 [ Info: bilinear_auxs!
-  1.454 ms (183 allocations: 5.54 MiB)
+  1.447 ms (183 allocations: 5.54 MiB)
 [ Info: bilinear_Basdevant_brdcst
-  1.153 ms (160 allocations: 7.54 MiB)
+  1.171 ms (160 allocations: 7.54 MiB)
 [ Info: bilinear_plan_brdcst!
-  931.542 μs (0 allocations: 0 bytes)
+  906.084 μs (0 allocations: 0 bytes)
 [ Info: bilin_hat_Basdevant_plan_brdcst!
-  744.458 μs (0 allocations: 0 bytes)
+  739.583 μs (0 allocations: 0 bytes)
 [ Info: bilinear_Basdevant_plan_loop!
-  697.125 μs (0 allocations: 0 bytes)
+  705.417 μs (0 allocations: 0 bytes)
 [ Info: bilinear_Basdevant_plan_doubleloop!
-  701.709 μs (0 allocations: 0 bytes)
+  698.083 μs (0 allocations: 0 bytes)
 
 ````
 

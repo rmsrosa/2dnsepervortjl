@@ -41,13 +41,20 @@ menu = [
         "pages/basdevant"
         "pages/stream"
     ]
-    "FFT Tools" => [
+    "Spectral Formulation"
+    "Discrete Fourier Transform"
+    "Physical Quantities"
+    "Two-dimensional turbulence"
+    "FFTW Tests" => [
         "src/literate/tests_basic.jl"
         "src/literate/tests_fft_plan.jl"
         "src/literate/benchmark_fft_plan.jl"
         "src/literate/tests_bilinear.jl"
+    ]
+    "Evolution Tests" => [
         "src/literate/tests_mol.jl"
     ]
+    "Simulations"
     "pages/references"
 ]
 +++

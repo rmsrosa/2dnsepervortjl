@@ -1,4 +1,4 @@
-@def title = "Testing direct and inverse FFTW"
+@def title = "Direct and inverse FFTW"
 
 # {{ get_title }}
 
@@ -48,7 +48,7 @@ fig
             const uuid = event.data[0];
             const width = event.data[1];
             const height = event.data[2];
-            const iframe = document.getElementById('8297ebbb-f3ea-4cfb-b5f9-14d97240a8ac');
+            const iframe = document.getElementById('75e60e23-2474-4e2a-9507-95a5bf75f22c');
             if (iframe) {
                 iframe.style.width = width + "px";
                 iframe.style.height = height + "px";
@@ -62,7 +62,7 @@ fig
     }
     register_resize_handler('http://127.0.0.1:9284')
 
-</script><iframe scrolling="no" id="8297ebbb-f3ea-4cfb-b5f9-14d97240a8ac" data-jscall-id="1" src="http://127.0.0.1:9284/8297ebbb-f3ea-4cfb-b5f9-14d97240a8ac" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+</script><iframe scrolling="no" id="75e60e23-2474-4e2a-9507-95a5bf75f22c" data-jscall-id="1" src="http://127.0.0.1:9284/75e60e23-2474-4e2a-9507-95a5bf75f22c" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
 
 ~~~
 
@@ -101,7 +101,7 @@ fig
             const uuid = event.data[0];
             const width = event.data[1];
             const height = event.data[2];
-            const iframe = document.getElementById('6bc3c87b-25f9-4b19-8ea2-33c47338eece');
+            const iframe = document.getElementById('feff30a8-2b65-4c33-8209-7ab852f645ea');
             if (iframe) {
                 iframe.style.width = width + "px";
                 iframe.style.height = height + "px";
@@ -115,7 +115,7 @@ fig
     }
     register_resize_handler('http://127.0.0.1:9284')
 
-</script><iframe scrolling="no" id="6bc3c87b-25f9-4b19-8ea2-33c47338eece" data-jscall-id="4" src="http://127.0.0.1:9284/6bc3c87b-25f9-4b19-8ea2-33c47338eece" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+</script><iframe scrolling="no" id="feff30a8-2b65-4c33-8209-7ab852f645ea" data-jscall-id="4" src="http://127.0.0.1:9284/feff30a8-2b65-4c33-8209-7ab852f645ea" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
 
 ~~~
 
@@ -139,7 +139,7 @@ fig
             const uuid = event.data[0];
             const width = event.data[1];
             const height = event.data[2];
-            const iframe = document.getElementById('24d36028-93a3-48fd-8c3a-723743ab44c0');
+            const iframe = document.getElementById('58272d65-2ced-4ca8-a3f1-f38f13605e41');
             if (iframe) {
                 iframe.style.width = width + "px";
                 iframe.style.height = height + "px";
@@ -153,7 +153,7 @@ fig
     }
     register_resize_handler('http://127.0.0.1:9284')
 
-</script><iframe scrolling="no" id="24d36028-93a3-48fd-8c3a-723743ab44c0" data-jscall-id="7" src="http://127.0.0.1:9284/24d36028-93a3-48fd-8c3a-723743ab44c0" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+</script><iframe scrolling="no" id="58272d65-2ced-4ca8-a3f1-f38f13605e41" data-jscall-id="7" src="http://127.0.0.1:9284/58272d65-2ced-4ca8-a3f1-f38f13605e41" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
 
 ~~~
 
@@ -201,7 +201,7 @@ fig
             const uuid = event.data[0];
             const width = event.data[1];
             const height = event.data[2];
-            const iframe = document.getElementById('f67f7111-40d0-46b2-a96c-9a55f7aec38b');
+            const iframe = document.getElementById('42891465-d5e6-4128-a53e-baa824959c15');
             if (iframe) {
                 iframe.style.width = width + "px";
                 iframe.style.height = height + "px";
@@ -215,7 +215,7 @@ fig
     }
     register_resize_handler('http://127.0.0.1:9284')
 
-</script><iframe scrolling="no" id="f67f7111-40d0-46b2-a96c-9a55f7aec38b" data-jscall-id="10" src="http://127.0.0.1:9284/f67f7111-40d0-46b2-a96c-9a55f7aec38b" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
+</script><iframe scrolling="no" id="42891465-d5e6-4128-a53e-baa824959c15" data-jscall-id="10" src="http://127.0.0.1:9284/42891465-d5e6-4128-a53e-baa824959c15" style="position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: none"></iframe></div>
 
 ~~~
 
