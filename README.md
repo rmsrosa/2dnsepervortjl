@@ -9,8 +9,8 @@ Simulation of homogeneous, incompressible Newtonian viscous flows in a fully-per
 
 ## Choice of github actions
 
-There are two workflows ready to be used, one that rebuilds the whole site during the github action (`.github/Deploy_build.yml`) and the other that simply uses the site build locally (`.github/Deploy_nobuild.yml`):
+There are two workflows ready to be used, one that rebuilds the whole site during the github action (`.github/Deploy_build.yml`) and the other that simply uses the site built locally (`.github/Deploy_nobuild.yml`):
 
 * If you want the github workflow to (re)build the whole site when deploying it, you should copy `.github/Deploy_build.yml` to `.github/workflows/Deploy.yml`, so it runs when new commits are pushed to `main`. It is also recommended to have `__site/` included in the `.gitignore` file, so it is not duplicated in the repo.
 
-* If, however, you don't want to rebuild the site and simply use the site that was built locally, then you should copy `.github/Deploy_nobuild.yml` to `.github/workflows/Deploy.yml`, instead. This action simply moves the contents of `__site/` in the main branch to the root of the `gh-pages` branch, to serve the website. In this case, you should **not** have `__site/` included in the `.gitignore` file.
+* If, however, you don't want to rebuild the site and simply want to use the site that was built locally, then you should copy `.github/Deploy_nobuild.yml` to `.github/workflows/Deploy.yml`, instead. This action simply moves the contents of `__site/` in the main branch to the root of the `gh-pages` branch, to serve the website. In this case, you should **not** have `__site/` included in the `.gitignore` file. Finally, you can view and edit your site with `serve`, but, when you think it is ready, you should build the site with `optimize` (e.g. `optimize(minify=false, prerender=false)`), so that the proper `prepath` is included in the generated html files.
