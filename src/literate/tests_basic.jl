@@ -5,7 +5,7 @@
 # We start by loading the packages we need:
 
 using FFTW
-using WGLMakie
+using CairoMakie
 using Test
 
 # ## The spatial domain and its discretization
@@ -51,9 +51,7 @@ fig
 
 # Or, better yet, as a heatmap:
 
-fig, ax, plt = heatmap(x, y, vort, colormap = :berlin)
-
-ax = Axis(fig[1, 1], xlabel = "x", ylabel = "y", title = "Vorticity heatmap")
+fig, ax, plt = heatmap(x, y, vort, colormap = :berlin, axis = (xlabel = "x", ylabel = "y", title = "Vorticity heatmap"))
 
 fig
 
@@ -75,9 +73,7 @@ nothing
 
 vort_hat = rfft(vort)
 
-fig, ax, plt = heatmap(κ_x, κ_y, abs.(vort_hat).^2, colormap = :berlin)
-
-ax = Axis(fig[1, 1], xlabel = "k_x", ylabel = "k_y", title = "Enstrophy spectrum heatmap")
+fig, ax, plt = heatmap(κ_x, κ_y, abs.(vort_hat).^2, colormap = :berlin, axis = (xlabel = "k_x", ylabel = "k_y", title = "Enstrophy spectrum heatmap"))
 
 fig
 
@@ -163,9 +159,9 @@ nothing
 
 # Here are some visualizations of the curl of the forcing term and of the vorticity
 
-heatmap(x, y, g_steady, xlabel="x", ylabel="y", title="Curl of the forcing term", titlefont=12)
+heatmap(x, y, g_steady, colormap = :berlin, axis = (xlabel = "x", ylabel = "y", title = "Curl of the forcing term"))
 
-heatmap(x, y, vort_steady, xlabel="x", ylabel="y", title="Steady state vorticity", titlefont=12)
+heatmap(x, y, vort_steady, colormap = :berlin, axis = (xlabel = "x", ylabel = "y", title = "Steady state vorticity"))
 
 nothing
 

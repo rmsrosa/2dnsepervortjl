@@ -96,16 +96,22 @@
     <li><a href="/2dnsepervortjl/pages/literated/tests_fft_plan">6.2. FFTW plans</a></li>
     </div>
     <div class="menu-level-2">
-    <li><a href="/2dnsepervortjl/pages/literated/benchmark_fft_plan">6.3. Benchmarking flags for FFTW plans</a></li>
-    </div>
-    <div class="menu-level-2">
-    <li><a href="/2dnsepervortjl/pages/literated/tests_bilinear">6.4. Approximations of the bilinear term</a></li>
+    <li><a href="/2dnsepervortjl/pages/literated/tests_bilinear">6.3. Approximations of the bilinear term</a></li>
     </div>
     <div class="menu-level-1">
     <li>7. Evolution Tests</li>
     </div>
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/tests_mol">7.1. Evolution via method of lines</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/evolution_jvp">7.2. Implicit solvers with the analytic Jacobian-vector product</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation</a></li>
     </div>
     <div class="menu-level-1">
     <li>8. Simulations</li>
@@ -130,7 +136,7 @@
       <div class="navbar">
     <p id="nav">
 <span id="nav-prev" style="float: left;">
-<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/benchmark_fft_plan">6.3. Benchmarking flags for FFTW plans <kbd>←</kbd></a>
+<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/tests_fft_plan">6.2. FFTW plans <kbd>←</kbd></a>
 </span>
 <span id="nav-next" style="float: right;">
     <a class="menu-level-1" href="/2dnsepervortjl/pages/literated/tests_mol"><kbd>→</kbd> 7.1. Evolution via method of lines</a>
@@ -152,22 +158,22 @@
 </div></br>
 
     
-<h1 id="get_title"><a href="#get_title" class="header-anchor">6.4. Approximations of the bilinear term</a></h1>
+<h1 id="get_title"><a href="#get_title" class="header-anchor">6.3. Approximations of the bilinear term</a></h1>
 <p>Ultimately we want to evolve, in time, an equation of the form # </p>
-<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>ω</mi><mi>t</mi></msub><mo>=</mo><mi>G</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">
+\[
   \omega_t = G(\omega).
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">G</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span><span class="mord">.</span></span></span></span></span>
-<p>For the 2D NSE, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi></mrow><annotation encoding="application/x-tex">G</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">G</span></span></span></span> is of the form</p>
-<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>G</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo><mo>=</mo><mi>g</mi><mo>+</mo><mi>ν</mi><mi mathvariant="normal">Δ</mi><mi>ω</mi><mo>+</mo><mi>B</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\]
+<p>For the 2D NSE, \(G\) is of the form</p>
+\[
  G(\omega) = g + \nu \Delta \omega + B(\omega),
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">G</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord mathnormal" style="margin-right:0.06366em;">ν</span><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span><span class="mpunct">,</span></span></span></span></span>
+\]
 <p>where</p>
-<span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>B</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo><mo>=</mo><mrow><mo fence="true">(</mo><msubsup><mi mathvariant="normal">∂</mi><mi>x</mi><mn>2</mn></msubsup><mo>−</mo><msubsup><mi mathvariant="normal">∂</mi><mi>y</mi><mn>2</mn></msubsup><mo fence="true">)</mo></mrow><mo stretchy="false">(</mo><mi>u</mi><mi>v</mi><mo stretchy="false">)</mo><mo>+</mo><msub><mi mathvariant="normal">∂</mi><mrow><mi>x</mi><mi>y</mi></mrow></msub><mrow><mo fence="true">(</mo><msup><mi>v</mi><mn>2</mn></msup><mo>−</mo><msup><mi>u</mi><mn>2</mn></msup><mo fence="true">)</mo></mrow><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">
+\[
   B(\omega) = \left(\partial_x^2 - \partial_y^2\right)(uv) + \partial_{xy}\left(v^2 - u^2\right),
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.2472em;vertical-align:-0.3831em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">(</span></span><span class="mord"><span class="mord" style="margin-right:0.05556em;">∂</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-2.453em;margin-left:-0.0556em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">x</span></span></span><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord" style="margin-right:0.05556em;">∂</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-2.453em;margin-left:-0.0556em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3831em;"><span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">)</span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">uv</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1.2141em;vertical-align:-0.35em;"></span><span class="mord"><span class="mord" style="margin-right:0.05556em;">∂</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0556em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">x</span><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;"><span class="delimsizing size1">(</span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mclose delimcenter" style="top:0em;"><span class="delimsizing size1">)</span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mpunct">,</span></span></span></span></span>
-<p>with <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="bold">u</mi><mo>=</mo><mo stretchy="false">(</mo><mi>u</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>v</mi><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">\mathbf{u} = (u(x, y), v(x, y))</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4444em;"></span><span class="mord mathbf">u</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">u</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mopen">(</span><span class="mord mathnormal">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose">))</span></span></span></span> being the velocity field associated with the vorticity, i.e. <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ω</mi><mo>=</mo><mi mathvariant="bold">∇</mi><mo>×</mo><mi mathvariant="bold">u</mi><mo>=</mo><msub><mi>v</mi><mi>x</mi></msub><mo>−</mo><msub><mi>u</mi><mi>y</mi></msub></mrow><annotation encoding="application/x-tex">\omega = \boldsymbol{\nabla} \times \mathbf{u} = v_x - u_y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7694em;vertical-align:-0.0833em;"></span><span class="mord"><span class="mord"><span class="mord mathbf">∇</span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.4444em;"></span><span class="mord mathbf">u</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.7333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0359em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7167em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>.</p>
-<p>In spectral space, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>ω</mi></mrow><annotation encoding="application/x-tex">\Delta \omega</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span></span></span></span> is just a diagonal operator, while <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi></mrow><annotation encoding="application/x-tex">g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span></span></span></span> is a given scalar field, which are both easy to compute. The most computationally demanding term is <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">B(\omega)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span></span></span></span>.</p>
-<p>Here, we test different ways of approximating <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">B(\omega)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span></span></span></span>.</p>
+\]
+<p>with \(\mathbf{u} = (u(x, y), v(x, y))\) being the velocity field associated with the vorticity, i.e. \(\omega = \boldsymbol{\nabla} \times \mathbf{u} = v_x - u_y\).</p>
+<p>In spectral space, \(\Delta \omega\) is just a diagonal operator, while \(g\) is a given scalar field, which are both easy to compute. The most computationally demanding term is \(B(\omega)\).</p>
+<p>Here, we test different ways of approximating \(B(\omega)\).</p>
 <p>The packages we are gonna need.</p>
 <pre><code class="language-julia">using FFTW
 using Plots
@@ -177,7 +183,7 @@ using BenchmarkTools
 using Random
 
 @info &quot;Threads: &#36;&#40;FFTW.nthreads&#40;&#41;&#41;&quot;</code></pre>
-<pre><code class="language-julia">&#91; Info: Threads: 8</code></pre>
+<pre><code class="language-julia">&#91; Info: Threads: 4</code></pre>
 <h2 id="operators"><a href="#operators" class="header-anchor">Operators</a></h2>
 <p>We first define a method to build the various operators acting in spectral space:</p>
 <pre><code class="language-julia">function get_operators&#40;N, κ₀&#41;
@@ -480,33 +486,35 @@ auxs &#61; u_hat, v_hat, u, v, w, uv, v2u2, uv_hat, v2u2_hat
 plans &#61; plan, plan_inv</code></pre>
 <pre><code class="language-julia">&#40;FFTW real-to-complex plan for 256×256 array of Float64
 &#40;rdft2-rank&gt;&#61;2/1
-  &#40;rdft2-ct-dit/4
-    &#40;hc2c-direct-4/6/0-x256 &quot;hc2cfdftv_4_sse2&quot;
-      &#40;rdft2-r2hc-direct-4 &quot;r2cf_4&quot;&#41;
-      &#40;rdft2-r2hc01-direct-4 &quot;r2cfII_4&quot;&#41;&#41;
-    &#40;dft-vrank&gt;&#61;1-x256/1
-      &#40;dft-direct-64-x2 &quot;n2fv_64_sse2&quot;&#41;&#41;&#41;
+  &#40;rdft2-vrank&gt;&#61;1-x256/1
+    &#40;rdft2-ct-dit/4
+      &#40;hc2c-direct-4/6/0 &quot;hc2cfdftv_4_avx2_128&quot;
+        &#40;rdft2-r2hc-direct-4 &quot;r2cf_4&quot;&#41;
+        &#40;rdft2-r2hc01-direct-4 &quot;r2cfII_4&quot;&#41;&#41;
+      &#40;dft-direct-64-x2 &quot;n2fv_64_avx2&quot;&#41;&#41;&#41;
   &#40;dft-vrank&gt;&#61;1-x129/1
     &#40;dft-ct-dit/16
-      &#40;dftw-direct-16/60 &quot;t2fv_16_sse2&quot;&#41;
+      &#40;dftw-direct-16/60 &quot;t2fv_16_avx2_128&quot;&#41;
       &#40;dft-indirect-before
-        &#40;dft-direct-16-x16 &quot;n1fv_16_sse2&quot;&#41;
+        &#40;dft-direct-16-x16 &quot;n1fv_16_avx2&quot;&#41;
         &#40;dft-r2hc-1
           &#40;rdft-rank0-ip-sq/2-x16-x16&#41;&#41;&#41;&#41;&#41;&#41;, 1.52587890625e-5 * FFTW complex-to-real plan for 129×256 array of ComplexF64
 &#40;rdft2-rank&gt;&#61;2/1
   &#40;rdft2-vrank&gt;&#61;1-x256/1
-    &#40;rdft2-ct-dif/4
-      &#40;hc2c-direct-4/6/0 &quot;hc2cbdft2_4&quot;
-        &#40;rdft2-hc2r-direct-4 &quot;r2cb_4&quot;&#41;
-        &#40;rdft2-hc2r10-direct-4 &quot;r2cbIII_4&quot;&#41;&#41;
-      &#40;dft-direct-64-x2 &quot;n1bv_64_sse2&quot;&#41;&#41;&#41;
+    &#40;rdft2-ct-dif/2
+      &#40;hc2c-direct-2/2/0 &quot;hc2cbdftv_2_avx2_128&quot;
+        &#40;rdft2-hc2r-direct-2 &quot;r2cb_2&quot;&#41;
+        &#40;rdft2-hc2r10-direct-2 &quot;r2cbIII_2&quot;&#41;&#41;
+      &#40;dft-ct-dit/2
+        &#40;dftw-direct-2/8 &quot;t2bv_2_avx2&quot;&#41;
+        &#40;dft-direct-64-x2 &quot;n2bv_64_avx2&quot;&#41;&#41;&#41;&#41;
   &#40;dft-vrank&gt;&#61;1-x129/1
-    &#40;dft-ct-dit/16
-      &#40;dftw-direct-16/60 &quot;t2bv_16_sse2&quot;&#41;
-      &#40;dft-indirect-before
-        &#40;dft-direct-16-x16 &quot;n1bv_16_sse2&quot;&#41;
-        &#40;dft-r2hc-1
-          &#40;rdft-rank0-ip-sq/2-x16-x16&#41;&#41;&#41;&#41;&#41;&#41;&#41;</code></pre>
+    &#40;dft-ct-dit/2
+      &#40;dftw-direct-2/4 &quot;t2bv_2_sse2&quot;&#41;
+      &#40;dft-ct-dif/2
+        &#40;dftw-directsq-2/4-x2 &quot;q1bv_2_avx2&quot;&#41;
+        &#40;dft-vrank&gt;&#61;1-x2/1
+          &#40;dft-direct-64-x2 &quot;n1bv_64_avx2&quot;&#41;&#41;&#41;&#41;&#41;&#41;&#41;</code></pre>
 <h2 id="check_results"><a href="#check_results" class="header-anchor">Check results</a></h2>
 <p>As a first test, we check that all implementations return about the same vector</p>
 <pre><code class="language-julia">@testset &quot;same result bilinear terms&quot; begin
@@ -560,17 +568,17 @@ plans &#61; plan, plan_inv</code></pre>
     @test bilin_hat_Basdevant_plan_loop ≈ bilin_hat_Basdevant_plan_doubleloop
 end
 nothing</code></pre>
-<pre><code class="language-julia">Test Summary:              | Pass  Total
-same result bilinear terms |    6      6</code></pre>
+<pre><code class="language-julia">Test Summary:              | Pass  Total  Time
+same result bilinear terms |    6      6  2.8s</code></pre>
 <h2 id="orthogonality"><a href="#orthogonality" class="header-anchor">Orthogonality</a></h2>
 <p>As a second test, we check the orthogonality condition of the bilinear term.</p>
-<p>Due to the periodicity and the divergence-free conditions, we should have <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>B</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>ω</mi><msub><mo stretchy="false">)</mo><msup><mi>L</mi><mn>2</mn></msup></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">(B(\omega), \omega)_{L^2} = 0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.5224em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463em;"><span style="top:-2.786em;margin-right:0.0714em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.1776em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>. We compute <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo stretchy="false">(</mo><mi>ω</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">B(\omega)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">ω</span><span class="mclose">)</span></span></span></span> in spectral space and transform it to physical space in order to check that.</p>
+<p>Due to the periodicity and the divergence-free conditions, we should have \((B(\omega), \omega)_{L^2} = 0\). We compute \(B(\omega)\) in spectral space and transform it to physical space in order to check that.</p>
 <pre><code class="language-julia">bilin_hat_naive &#61; bilinear_naive&#40;vort_hat, &#40;operators, vars&#41;&#41;
 bilin_naive &#61; irfft&#40;bilin_hat_naive, N&#41;
 nothing</code></pre>
-<p>We compute the inner product by summing over the nodal values and multiplying that by the area element <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi><mi>x</mi><mi mathvariant="normal">Δ</mi><mi>y</mi><mo>=</mo><mo stretchy="false">(</mo><mi>L</mi><mi mathvariant="normal">/</mi><mi>N</mi><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">\Delta x \Delta y = (L/N)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8778em;vertical-align:-0.1944em;"></span><span class="mord">Δ</span><span class="mord mathnormal">x</span><span class="mord">Δ</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0641em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">L</span><span class="mord">/</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span>. Notice computing the inner product as such has an inherent numerical error, which is also of the order of the area element, so we don&#39;t expect the output to be of machine precision.</p>
+<p>We compute the inner product by summing over the nodal values and multiplying that by the area element \(\Delta x \Delta y = (L/N)^2\). Notice computing the inner product as such has an inherent numerical error, which is also of the order of the area element, so we don&#39;t expect the output to be of machine precision.</p>
 <pre><code class="language-julia">sum&#40;bilin_naive .* vort&#41; * &#40;L / N&#41;^2</code></pre>
-<pre><code class="language-julia">-3.5296455864033787e-6</code></pre>
+<pre><code class="language-julia">6.014305969420984e8</code></pre>
 <p>In spectral space, due to Parseval&#39;s identity, this translates to the following &#40;except we need to correct for some indices...&#41;</p>
 <pre><code class="language-julia">M &#61; iseven&#40;N&#41; ? div&#40;N, 2&#41; : div&#40;N, 2&#41; &#43; 1
 
@@ -579,7 +587,7 @@ nothing</code></pre>
     &#43; sum&#40;bilin_hat_naive&#91;1,:&#93; .* conj.&#40;vort_hat&#91;1,:&#93;&#41;&#41;
     &#43; sum&#40;bilin_hat_naive&#91;M&#43;1:end,:&#93; .* conj.&#40;vort_hat&#91;M&#43;1:end,:&#93;&#41;&#41;
 &#41; / N^2 * &#40;L / N&#41;^2</code></pre>
-<pre><code class="language-julia">-7.17626660933107e-6 &#43; 9.440994952260796e8im</code></pre>
+<pre><code class="language-julia">-5.618549012696226e-6 - 7.775027593682511e9im</code></pre>
 <p>Hmm, something is wrong...</p>
 <h2 id="benchmark"><a href="#benchmark" class="header-anchor">Benchmark</a></h2>
 <pre><code class="language-julia">@info &quot;bilinear_naive&quot;
@@ -603,19 +611,19 @@ nothing</code></pre>
 @info &quot;bilinear_Basdevant_plan_doubleloop&#33;&quot;
 @btime bilinear_Basdevant_plan_doubleloop&#33;&#40;bh, vh, p&#41; setup &#61; &#40;bh &#61; similar&#40;&#36;vort_hat&#41;; vh &#61; copy&#40;&#36;vort_hat&#41;; p &#61; &#36;&#40;operators, vars, auxs, plans&#41;&#41;;</code></pre>
 <pre><code class="language-julia">&#91; Info: bilinear_naive
-  1.416 ms &#40;193 allocations: 8.05 MiB&#41;
+  1.540 ms &#40;90 allocations: 8.05 MiB&#41;
 &#91; Info: bilinear_auxs&#33;
-  1.447 ms &#40;183 allocations: 5.54 MiB&#41;
+  1.570 ms &#40;75 allocations: 5.53 MiB&#41;
 &#91; Info: bilinear_Basdevant_brdcst
-  1.171 ms &#40;160 allocations: 7.54 MiB&#41;
+  1.314 ms &#40;79 allocations: 7.54 MiB&#41;
 &#91; Info: bilinear_plan_brdcst&#33;
-  906.084 μs &#40;0 allocations: 0 bytes&#41;
+  1.040 ms &#40;0 allocations: 0 bytes&#41;
 &#91; Info: bilin_hat_Basdevant_plan_brdcst&#33;
-  739.583 μs &#40;0 allocations: 0 bytes&#41;
+  842.924 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: bilinear_Basdevant_plan_loop&#33;
-  705.417 μs &#40;0 allocations: 0 bytes&#41;
+  819.651 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: bilinear_Basdevant_plan_doubleloop&#33;
-  698.083 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
+  820.523 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
 <h2 id="conclusions"><a href="#conclusions" class="header-anchor">Conclusions</a></h2>
 <p>Clearly, <code>bilinear_naive</code> is pretty bad, in great part because of the use of the allocating transforms <code>rfft</code> and <code>irfft</code>.</p>
 <p>The method <code>bilinear_auxs&#33;</code> saves some allocations but is pretty slow as well, due to also using <code>rfft</code> and <code>irfft</code>.</p>
@@ -628,7 +636,7 @@ nothing</code></pre>
     <div class="navbar">
     <p id="nav">
 <span id="nav-prev" style="float: left;">
-<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/benchmark_fft_plan">6.3. Benchmarking flags for FFTW plans <kbd>←</kbd></a>
+<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/tests_fft_plan">6.2. FFTW plans <kbd>←</kbd></a>
 </span>
 <span id="nav-next" style="float: right;">
     <a class="menu-level-1" href="/2dnsepervortjl/pages/literated/tests_mol"><kbd>→</kbd> 7.1. Evolution via method of lines</a>
@@ -647,16 +655,16 @@ nothing</code></pre>
         </div>
     
 
-    Last modified: March 24, 2022. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+    Last modified: November 17, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
 </div><!-- CONTENT ENDS HERE -->
 
       </div> <!-- .books-content -->
     </div> <!-- .books-container -->
 
     
-        
-        
-        
+        <script src="/2dnsepervortjl/libs/katex/katex.min.js"></script>
+        <script src="/2dnsepervortjl/libs/katex/auto-render.min.js"></script>
+        <script>renderMathInElement(document.body)</script>
     
 
     

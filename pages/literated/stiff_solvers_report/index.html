@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="" />
+  <meta name="author" content="and contributors" />
+   <title>Stiff solvers, Jacobians and automatic differentiation</title>  
+  <link rel="shortcut icon" type="image/png" href="/2dnsepervortjl/assets/images/favicon.png"/>
+  <link rel="stylesheet" href="/2dnsepervortjl/css/base.css"/>
+  
+    <link rel="stylesheet" href="/2dnsepervortjl/css/base_showaside.css"/>
+  
+  <script src="/2dnsepervortjl/libs/mousetrap/mousetrap.min.js"></script>
+
+  
+
+  
+    <link rel="stylesheet" href="/2dnsepervortjl/libs/katex/katex.min.css">
+  
+</head>
+
+<body>
+
+  <div class="books-container">
+
+  <aside class="books-menu">
+  <input type="checkbox" id="menu">
+  <label for="menu">☰</label>
+
+  <div class="books-title">
+    <a href="/2dnsepervortjl/">Two-dimensional periodic flows</a>
+  </div>
+
+  <br />
+
+  <div class="books-subtitle">
+    Pseudo-spectral simulation in Julia
+  </div>
+
+  <br />
+
+  <div class="books-author">
+    <a href="https://rmsrosa.github.io">Ricardo M. S. Rosa</a>
+  </div>
+
+  <div class="books-menu-content">
+    <div class="menu-level-1">
+    <li><a href="/2dnsepervortjl/pages/intro">Introduction</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>1. Mathematical Formulation</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/pressure-velocity">1.1. Pressure-velocity formulation</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/vorticity">1.2. Vorticity formulation</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/basdevant">1.3. Basdevant reduction</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/stream">1.4. Stream function</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>2. Spectral Formulation</li>
+    </div>
+    <div class="menu-level-1">
+    <li>3. Discrete Fourier Transform</li>
+    </div>
+    <div class="menu-level-1">
+    <li>4. Physical Quantities</li>
+    </div>
+    <div class="menu-level-1">
+    <li>5. Two-dimensional turbulence</li>
+    </div>
+    <div class="menu-level-1">
+    <li>6. FFTW Tests</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_basic">6.1. Direct and inverse FFTW</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_fft_plan">6.2. FFTW plans</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_bilinear">6.3. Approximations of the bilinear term</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>7. Evolution Tests</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_mol">7.1. Evolution via method of lines</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/evolution_jvp">7.2. Implicit solvers with the analytic Jacobian-vector product</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>8. Simulations</li>
+    </div>
+    <div class="menu-level-1">
+    <li><a href="/2dnsepervortjl/pages/references">9. References</a></li>
+    </div>
+<div>
+
+
+  
+    <a href="https://github.com/rmsrosa/2dnsepervortjl"><img src="/2dnsepervortjl/assets/images/GitHub-Mark-32px.png" alt="GitHub repo" width="18" style="margin:5px 5px" align="left"></a>
+
+  
+
+</aside>
+
+
+  <div class="books-content">
+
+    
+      <div class="navbar">
+    <p id="nav">
+<span id="nav-prev" style="float: left;">
+<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4 <kbd>←</kbd></a>
+</span>
+<span id="nav-next" style="float: right;">
+    <a class="menu-level-1" href="/2dnsepervortjl/pages/references"><kbd>→</kbd> 9. References</a>
+</span>
+    </p>
+</div>
+</br></br>
+
+    
+
+    
+      <div class="badges">
+<p>
+<a href="https://nbviewer.org/urls/rmsrosa.github.io/2dnsepervortjl/generated/literated/stiff_solvers_report.ipynb"><img align="left" src="https://img.shields.io/badge/view%20in-nbviewer-orange" alt="View in NBViewer" title="View Jupyter notebook in NBViewer"></a>
+<a href="https://mybinder.org/v2/gh/rmsrosa/2dnsepervortjl/binderenv?urlpath=git-pull%3Frepo%3Dhttps://github.com/rmsrosa/2dnsepervortjl%26urlpath%3Dlab/tree%252F2dnsepervortjl/generated/literated/stiff_solvers_report.ipynb%26branch%3Dgh-pages"><img align="left" src="https://mybinder.org/badge.svg" alt="Open in binder" title="Open in binder"></a>
+<a href="/2dnsepervortjl/generated/literated/stiff_solvers_report.ipynb"><img align="left" src="https://img.shields.io/badge/download-notebook-blue" alt="Download notebook" title="Download Jupyter notebook"></a>
+<a href="/2dnsepervortjl/src/literate/stiff_solvers_report.jl"><img align="left" src="https://img.shields.io/badge/view-source-lightblue" alt="View source" title="View source"></a>
+</p>
+</div></br>
+
+    
+<h1 id="get_title"><a href="#get_title" class="header-anchor">7.4. Stiff solvers, Jacobians and automatic differentiation</a></h1>
+<p>This page reports a set of experiments on how to use the stiff &#40;implicit&#41; solvers of <a href="https://github.com/SciML/DifferentialEquations.jl">DifferentialEquations.jl</a> with the pseudo-spectral right-hand side of <a href="/2dnsepervortjl/pages/literated/tests_mol">7.1. Evolution via method of lines</a>, and on the current state of automatic differentiation &#40;AD&#41; in Julia for this kind of code. The two approaches that came out of it are implemented in <a href="/2dnsepervortjl/pages/literated/evolution_jvp">7.2. Implicit solvers with the analytic Jacobian-vector product</a> and in <a href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4</a>.</p>
+<p>The experiments described here are not executed when this page is built: their results were obtained once, on the machine described in the <a href="#environment">Environment</a> section, and are reported as static tables. The timings, in particular, are indicative only: they are single runs, after a warm-up call that compiles each solver, with no attempt at statistics, and they depend on the hardware, on the number of threads and on the load of the machine. Only the relative comparison between the methods is meaningful, and even that may change from one machine to another. The main benchmark can be run again, on any machine, with the script <code>benchmarks/benchmark_stiff_solvers.jl</code> in the <a href="https://github.com/rmsrosa/2dnsepervortjl">repository</a>, and the timings printed in the other two pages are obtained when those pages are built, so they may differ from the static tables below.</p>
+<h2 id="the_problem"><a href="#the_problem" class="header-anchor">The problem</a></h2>
+<p>Stiff solvers need the Jacobian of the right-hand side, or at least its action on vectors, and by default it is computed with forward-mode AD via <a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff.jl</a>. The right-hand side <code>nsepervort_hat_rhs&#33;</code> of <a href="/2dnsepervortjl/pages/literated/tests_mol">7.1. Evolution via method of lines</a> has three features that get in the way:</p>
+<ul>
+<li><p>the state is complex &#40;the <code>rfft</code> half-spectrum&#41;;</p>
+</li>
+<li><p>it calls FFTW, a C library, through precomputed plans, which only accept <code>Float32</code>/<code>Float64</code> arrays;</p>
+</li>
+<li><p>it is in-place and writes into preallocated <code>Float64</code>/<code>ComplexF64</code> work arrays.</p>
+</li>
+</ul>
+<p>It also has a fourth feature which is not related to AD, but which is unsafe with any adaptive or implicit solver: it mutates its <em>input</em>, by zeroing the dealiased modes of <code>vort_hat</code>. The new pages dealias the initial condition once instead; since the output of the right-hand side is dealiased, the state stays dealiased.</p>
+<h2 id="environment"><a href="#environment" class="header-anchor">Environment</a></h2>
+<ul>
+<li><p>Julia 1.13.3, on a 4-core Intel Xeon @ 2.10GHz &#40;Linux&#41;, with 4 Julia threads; November 2026.</p>
+</li>
+<li><p>OrdinaryDiffEq v7.8.1 &#40;OrdinaryDiffEqBDF v2.4.14, OrdinaryDiffEqSDIRK v2.9.8, OrdinaryDiffEqRosenbrock v2.7.5, OrdinaryDiffEqExponentialRK v2.4.0, OrdinaryDiffEqIMEXMultistep v2.3.0, OrdinaryDiffEqDifferentiation v3.12.5&#41;, SciMLBase v3.58.0, SciMLOperators v1.30.4, LinearSolve v5.18.3 &#40;Krylov v0.10.12&#41;.</p>
+</li>
+<li><p>FFTW v1.10.0, AbstractFFTs v1.5.0.</p>
+</li>
+<li><p>ForwardDiff v1.5.0, Enzyme v0.13.220, Mooncake v0.5.70, DifferentiationInterface v0.7.22, ADTypes v1.24.0, PreallocationTools v1.7.1.</p>
+</li>
+</ul>
+<p>Note that in OrdinaryDiffEq v7 only a few solvers are exported by <code>OrdinaryDiffEq</code> itself; <code>QNDF</code>, <code>FBDF</code>, <code>KenCarp47</code>, <code>TRBDF2</code>, <code>ETDRK4</code> and others must be loaded from their sub-packages &#40;<code>OrdinaryDiffEqBDF</code>, <code>OrdinaryDiffEqSDIRK</code>, <code>OrdinaryDiffEqExponentialRK</code>, ...&#41;. Also, the <code>autodiff</code> keyword of the solvers takes an <a href="https://github.com/SciML/ADTypes.jl">ADTypes.jl</a> object, such as <code>AutoForwardDiff&#40;&#41;</code>, <code>AutoFiniteDiff&#40;&#41;</code> or <code>AutoEnzyme&#40;&#41;</code>, instead of a boolean.</p>
+<h2 id="the_current_state_of_automatic_differentiation"><a href="#the_current_state_of_automatic_differentiation" class="header-anchor">The current state of automatic differentiation</a></h2>
+<p>The AD ecosystem in Julia is now organized around two packages: <a href="https://github.com/SciML/ADTypes.jl">ADTypes.jl</a>, which defines the types used to select a backend &#40;<code>AutoForwardDiff&#40;&#41;</code>, <code>AutoEnzyme&#40;&#41;</code>, <code>AutoMooncake&#40;&#41;</code>, <code>AutoFiniteDiff&#40;&#41;</code>, ...&#41;, and <a href="https://github.com/JuliaDiff/DifferentiationInterface.jl">DifferentiationInterface.jl</a>, a common interface to all the backends, which is what OrdinaryDiffEq uses internally to compute Jacobians and Jacobian-vector products. The main backends are:</p>
+<ul>
+<li><p><a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff.jl</a>: forward mode, via dual numbers; mature and still the default in the SciML ecosystem.</p>
+</li>
+<li><p><a href="https://github.com/EnzymeAD/Enzyme.jl">Enzyme.jl</a>: forward and reverse modes, working at the level of the LLVM code; supports mutation and complex numbers.</p>
+</li>
+<li><p><a href="https://github.com/chalk-lab/Mooncake.jl">Mooncake.jl</a>: reverse mode &#40;and forward mode&#41;, source-to-source, supports mutation.</p>
+</li>
+<li><p><a href="https://github.com/FluxML/Zygote.jl">Zygote.jl</a>: reverse mode, does not support mutation, so it is not suitable for in-place right-hand sides.</p>
+</li>
+<li><p><a href="https://github.com/JuliaDiff/FiniteDiff.jl">FiniteDiff.jl</a>: not AD, but available through the same interface as <code>AutoFiniteDiff&#40;&#41;</code>.</p>
+</li>
+</ul>
+<p>For differentiating <em>through</em> the solver, e.g. with respect to parameters, the relevant package is <a href="https://github.com/SciML/SciMLSensitivity.jl">SciMLSensitivity.jl</a>. Sparse Jacobians are handled by <code>AutoSparse</code> together with <a href="https://github.com/adrhill/SparseConnectivityTracer.jl">SparseConnectivityTracer.jl</a> and <a href="https://github.com/gdalle/SparseMatrixColorings.jl">SparseMatrixColorings.jl</a>, but they do not help here, since our Jacobian is dense.</p>
+<p>Here is what happened with the <em>original</em> right-hand side, unchanged:</p>
+<table><tr><th align="left">Backend / test</th><th align="left">Result</th></tr><tr><td align="left"><code>Rodas5P&#40;&#41;</code> with the default ForwardDiff</td><td align="left">fails: <code>ForwardDiff.DerivativeConfig</code> has no method for a <code>ComplexF64</code> state</td></tr><tr><td align="left">same, with <code>ForwardDiff.can_dual&#40;::Type&#123;ComplexF64&#125;&#41; &#61; true</code> &#40;a workaround formerly used in <a href="/2dnsepervortjl/pages/literated/tests_mol">7.1. Evolution via method of lines</a>&#41;</td><td align="left">fails in the same way; the workaround no longer has any effect</td></tr><tr><td align="left"><code>rfft</code> of an <code>Array&#123;&lt;:ForwardDiff.Dual&#125;</code></td><td align="left">fails: <code>type ForwardDiff.Dual&#123;...&#125; not supported</code></td></tr><tr><td align="left">FFTW plan applied to an <code>Array&#123;&lt;:ForwardDiff.Dual&#125;</code></td><td align="left">fails: no conversion from <code>Dual</code> to <code>Float64</code></td></tr><tr><td align="left"><code>Rodas5P&#40;autodiff &#61; AutoEnzyme&#40;&#41;&#41;</code></td><td align="left">fails: Enzyme has no derivative rule for the FFTW C library calls &#40;<code>No forward mode derivative found for ... fftw_alignment_of</code>&#41;</td></tr><tr><td align="left">Mooncake</td><td align="left">not tested; it would also need rules for the FFTW calls</td></tr><tr><td align="left"><code>Rodas5P&#40;autodiff &#61; AutoFiniteDiff&#40;&#41;&#41;</code>, \(N = 32\)</td><td align="left">works, building a dense Jacobian by finite differences</td></tr></table>
+<p>So, the issues from a few years ago are still there: ForwardDiff does not handle complex states in OrdinaryDiffEq, and neither ForwardDiff nor Enzyme can go through FFTW.</p>
+<p>ForwardDiff <em>can</em> be made to work, and we checked that it does &#40;with <code>Rodas5P</code>, <code>QNDF</code> and <code>KenCarp4</code> at \(N = 32\), and with Jacobian-free Newton-Krylov at \(N = 128\)&#41;, but this requires four changes to the right-hand side:</p>
+<ol>
+<li><p>storing the state as a real array, <code>reinterpret&#40;reshape, Float64, vort_hat&#41;</code>, and viewing it as complex inside the right-hand side;</p>
+</li>
+<li><p>wrapping the work arrays with <code>PreallocationTools.DiffCache</code>, so they can hold dual numbers;</p>
+</li>
+<li><p>writing an FFT wrapper for arrays of dual numbers, which, using the linearity of the transform, applies the plan to the value and to each partial derivative separately &#40;about twenty lines&#41;;</p>
+</li>
+<li><p>not mutating the input.</p>
+</li>
+</ol>
+<p>The resulting Jacobian agreed with the one from finite differences to within \(5 \times 10^{-5}\), relative, which is the accuracy of the finite differences. However, the right-hand side is <em>bilinear</em>, so the Jacobian is easy to write down by hand, and that is both simpler and faster. We did not pursue the AD version any further.</p>
+<h2 id="the_analytic_jacobian"><a href="#the_analytic_jacobian" class="header-anchor">The analytic Jacobian</a></h2>
+<p>With \(F(\omega) = g + \nu\Delta\omega - B(\omega, \omega)\), with \(B\) bilinear, the Jacobian is \(J(\omega)h = \nu\Delta h - B(\omega, h) - B(h, \omega)\). Each product \(J(\omega)h\) costs six FFTs, against four for \(F\). Since \(F\) is quadratic, the centered difference \((F(\omega + \varepsilon h) - F(\omega - \varepsilon h))/2\varepsilon\) equals \(J(\omega)h\) exactly, which gives a sharp test: the two agree to about \(4 \times 10^{-14}\), relative.</p>
+<p>Three caveats:</p>
+<ul>
+<li><p><strong>The Jacobian is dense.</strong> The bilinear term is a convolution in spectral space. At \(N = 32\), 29&#37; of the entries of the Jacobian are nonzero. At \(N = 128\), with 16640 real unknowns, the dense matrix would take about 2.2 GB, before any factorization. An attempt to use <code>KenCarp4</code> with a dense finite-difference Jacobian at \(N = 128\) was still running after twenty minutes, using more than 5 GB, and was stopped. Hence the Jacobian should be given as a Jacobian-vector product, <code>ODEFunction&#40;f; jvp &#61; jvp&#33;&#41;</code>, and combined with a Krylov linear solver, <code>linsolve &#61; KrylovJL_GMRES&#40;&#41;, concrete_jac &#61; false</code>.</p>
+</li>
+<li><p><strong>The state should be real.</strong> The <code>rfft</code> half-spectrum represents a real field, so the maps involved are only real-linear: \(J(\mathrm{i}h) \neq \mathrm{i}J(h)\), while Newton and GMRES iterations on a complex vector assume complex linearity. Reinterpreting the complex array as a real array of size \((2, M, N)\) costs nothing.</p>
+</li>
+<li><p><strong>Rosenbrock methods still need \(\partial F/\partial t\).</strong> Even with the Jacobian given via <code>jac</code>, <code>Rodas5P</code> calls AD for the time derivative and fails. Since the forcing is steady, we pass <code>tgrad &#61; &#40;dT, u, p, t&#41; -&gt; fill&#33;&#40;dT, 0&#41;</code>.</p>
+</li>
+</ul>
+<h2 id="timings"><a href="#timings" class="header-anchor">Timings</a></h2>
+<p>All runs are for \(N = 128\) &#40;<code>Nsub &#61; 84</code>&#41;, \(\nu = 1\), \(t \in [0, 1]\), starting from a random four-mode vorticity field and with a single-mode steady forcing, as in <a href="/2dnsepervortjl/pages/literated/tests_mol">7.1. Evolution via method of lines</a>. The relative error is measured at \(t = 1\) against a reference solution computed with <code>Vern9&#40;&#41;</code> and <code>abstol &#61; reltol &#61; 1e-12</code>. Adaptive methods use the default tolerances.</p>
+<p>These tables were obtained on the machine described in the <a href="#environment">Environment</a> section and are kept here as a record; the same benchmark can be run on another machine with the script <code>benchmarks/benchmark_stiff_solvers.jl</code> in the repository.</p>
+<h3 id="matrix-free_implicit_methods_with_the_analytic_jacobian-vector_product"><a href="#matrix-free_implicit_methods_with_the_analytic_jacobian-vector_product" class="header-anchor">Matrix-free implicit methods with the analytic Jacobian-vector product</a></h3>
+<p>The number of evaluations is the solver&#39;s own count, <code>sol.stats.nf</code>, which includes the Jacobian-vector products; most of the evaluations are, in fact, Jacobian-vector products, one per GMRES iteration &#40;in a separate run with counters, for instance, <code>QNDF</code> used 217 evaluations of \(F\) and 1475 of \(J(\omega)h\); the counts vary slightly from run to run, since multithreaded FFTs change the round-off errors and, with them, the number of GMRES iterations&#41;.</p>
+<table><tr><th align="left">Method</th><th align="right">Time &#40;s&#41;</th><th align="right">Relative error</th><th align="right">Evaluations &#40;\(F\) &#43; jvp&#41;</th><th align="right">Steps</th></tr><tr><td align="left"><code>Tsit5&#40;&#41;</code> &#40;explicit&#41;</td><td align="right">1.54</td><td align="right">1.6e-9</td><td align="right">5871</td><td align="right">978</td></tr><tr><td align="left"><code>Vern9&#40;&#41;</code> &#40;explicit&#41;</td><td align="right">3.05</td><td align="right">2.5e-11</td><td align="right">12402</td><td align="right">775</td></tr><tr><td align="left"><code>QNDF</code> &#43; jvp &#43; GMRES</td><td align="right">0.89</td><td align="right">3.0e-7</td><td align="right">1817</td><td align="right">186</td></tr><tr><td align="left"><code>FBDF</code> &#43; jvp &#43; GMRES</td><td align="right">1.60</td><td align="right">8.2e-6</td><td align="right">2633</td><td align="right">224</td></tr><tr><td align="left"><code>KenCarp47</code> &#43; jvp &#43; GMRES</td><td align="right">1.54</td><td align="right">2.9e-7</td><td align="right">3303</td><td align="right">19</td></tr><tr><td align="left"><code>TRBDF2</code> &#43; jvp &#43; GMRES</td><td align="right">1.06</td><td align="right">1.9e-5</td><td align="right">2429</td><td align="right">28</td></tr></table>
+<p>On \(t \in [0, 10]\), converging to the steady state, <code>QNDF</code> &#43; jvp &#43; GMRES took 220 steps and reached a distance of about \(8 \times 10^{-7}\) from the steady state.</p>
+<h3 id="exponential_time_differencing"><a href="#exponential_time_differencing" class="header-anchor">Exponential time differencing</a></h3>
+<p>Here the stiff linear part \(\nu\Delta\), diagonal in spectral space, is passed as a <code>DiagonalOperator</code> in a <code>SplitODEProblem</code> and integrated exactly, and no Jacobian is needed at all. <code>ETDRK4</code> is used with a fixed time step.</p>
+<table><tr><th align="left">Method</th><th align="right">Time &#40;s&#41;</th><th align="right">Relative error</th><th align="right">Steps</th></tr><tr><td align="left"><code>Tsit5&#40;&#41;</code> &#40;explicit&#41;</td><td align="right">1.42</td><td align="right">4.2e-10</td><td align="right">979</td></tr><tr><td align="left"><code>Vern9&#40;&#41;</code> &#40;explicit&#41;</td><td align="right">2.88</td><td align="right">1.5e-11</td><td align="right">775</td></tr><tr><td align="left"><code>ETDRK4&#40;&#41;</code>, <code>dt &#61; 1e-2</code></td><td align="right">0.17</td><td align="right">8.2e-5</td><td align="right">100</td></tr><tr><td align="left"><code>ETDRK4&#40;&#41;</code>, <code>dt &#61; 5e-3</code></td><td align="right">0.26</td><td align="right">5.5e-6</td><td align="right">200</td></tr><tr><td align="left"><code>ETDRK4&#40;&#41;</code>, <code>dt &#61; 2.5e-3</code></td><td align="right">0.38</td><td align="right">4.0e-7</td><td align="right">401</td></tr><tr><td align="left"><code>ETDRK4&#40;&#41;</code>, <code>dt &#61; 1.25e-3</code></td><td align="right">0.82</td><td align="right">2.8e-8</td><td align="right">801</td></tr></table>
+<p>The errors decrease at the expected fourth order. On \(t \in [0, 10]\), with <code>dt &#61; 1e-2</code>, <code>ETDRK4</code> reached a distance of about \(8 \times 10^{-7}\) from the steady state.</p>
+<p>With \(\nu = 0.1\) &#40;in an earlier run, with a different random initial condition&#41;, on the other hand, <code>dt &#61; 1e-2</code> is too large and the solution blows up &#40;<code>ReturnCode.Unstable</code>&#41;, while <code>dt &#61; 1e-3</code> gives a relative error of \(3.7 \times 10^{-5}\) in about 1.6 s, against 0.35 s for <code>Tsit5&#40;&#41;</code> with an error of \(6.7 \times 10^{-6}\): with less viscosity the problem is less stiff and the time step is limited by the nonlinear term, which favours the explicit, adaptive methods.</p>
+<p>The IMEX multistep method <code>CNAB2&#40;&#41;</code>, with <code>dt &#61; 1e-3</code>, worked but was very slow in this setup &#40;about 87 s for \(t \in [0, 1]\), with a relative error of \(7 \times 10^{-4}\)&#41;; we did not investigate why.</p>
+<h3 id="small_grids_dense_jacobian"><a href="#small_grids_dense_jacobian" class="header-anchor">Small grids, dense Jacobian</a></h3>
+<p>At \(N = 32\), with the dense Jacobian assembled column by column from the analytic jvp, <code>QNDF</code>, <code>KenCarp4</code> and <code>FBDF</code> work, as does <code>Rodas5P</code>, once <code>tgrad</code> is given.</p>
+<h3 id="a_turbulent_case"><a href="#a_turbulent_case" class="header-anchor">A turbulent case</a></h3>
+<p>With \(\nu = 0.01\), the initial vorticity used here is large enough for the flow to be turbulent. All methods, including <code>Vern9&#40;&#41;</code>, then give relative errors of order one at \(t = 1\), at the default tolerances, compared with the tight-tolerance reference. This reflects the sensitivity to the initial conditions of the flow, not a failure of the methods, and such cases are not useful for comparing accuracy.</p>
+<h2 id="conclusions"><a href="#conclusions" class="header-anchor">Conclusions</a></h2>
+<ul>
+<li><p>No AD is needed: since the nonlinear term is bilinear, the Jacobian-vector product is a few lines of code and costs about one and a half evaluations of the right-hand side.</p>
+</li>
+<li><p>The Jacobian is dense, so it should be used matrix-free, with a Krylov linear solver, except on small grids.</p>
+</li>
+<li><p>The state should be stored as a real array for the implicit methods.</p>
+</li>
+<li><p>For the viscous, moderately stiff case \(\nu = 1\), \(N = 128\), <code>QNDF</code> with the analytic jvp and GMRES was the fastest of the implicit methods, somewhat faster than <code>Tsit5&#40;&#41;</code>, and <code>ETDRK4</code> was faster still, for comparable accuracy. The advantage of the stiff and exponential methods grows with \(N\) and \(\nu\) &#40;the stiffness scales with \(\nu N^2\)&#41; and in long runs towards a steady state; for less viscous, more nonlinear regimes, explicit adaptive methods remain competitive.</p>
+</li>
+<li><p>If AD becomes necessary, for instance for sensitivities with respect to parameters, the obstacle is still the FFT: neither ForwardDiff nor Enzyme can differentiate through FFTW plans out of the box.</p>
+</li>
+</ul>
+
+    <div class="navbar">
+    <p id="nav">
+<span id="nav-prev" style="float: left;">
+<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4 <kbd>←</kbd></a>
+</span>
+<span id="nav-next" style="float: right;">
+    <a class="menu-level-1" href="/2dnsepervortjl/pages/references"><kbd>→</kbd> 9. References</a>
+</span>
+    </p>
+</div>
+</br></br>
+
+
+
+<div class="page-foot">
+    
+        <div class="license">
+            <a href=LICENSE>MIT License </a>
+            <a href="https://rmsrosa.github.io">(Ricardo M. S. Rosa)</a>
+        </div>
+    
+
+    Last modified: November 17, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+</div><!-- CONTENT ENDS HERE -->
+
+      </div> <!-- .books-content -->
+    </div> <!-- .books-container -->
+
+    
+        <script src="/2dnsepervortjl/libs/katex/katex.min.js"></script>
+        <script src="/2dnsepervortjl/libs/katex/auto-render.min.js"></script>
+        <script>renderMathInElement(document.body)</script>
+    
+
+    
+
+  </body>
+</html>
