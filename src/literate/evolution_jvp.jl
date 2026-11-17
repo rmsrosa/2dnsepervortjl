@@ -242,7 +242,7 @@ sol_ref = solve(prob, Vern9(), abstol = 1e-12, reltol = 1e-12, save_everystep = 
 u_ref = sol_ref.u[end]
 nothing
 
-# Now we solve with a few methods, at the default tolerances, and record the elapsed time (the first call to each solver compiles it, so we time the second call), the relative error at the final time and the number of evaluations counted by the solver, which, for the implicit methods, includes the Jacobian-vector products (most of them, in fact, since they are used in every GMRES iteration).
+# Now we solve with a few methods, at the default tolerances, and record the elapsed time (the first call to each solver compiles it, so we time the second call), the relative error at the final time and the number of evaluations counted by the solver, which, for the implicit methods, includes the Jacobian-vector products (most of them, in fact, since they are used in every GMRES iteration). The timings are measured when this page is built, so they depend on the machine that builds it; see the [report on stiff solvers and automatic differentiation](/pages/literated/stiff_solvers_report) for a discussion.
 
 methods = [
     "Tsit5 (explicit)" => Tsit5(),

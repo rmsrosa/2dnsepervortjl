@@ -187,7 +187,7 @@ nothing
 
 # ## Accuracy and timings
 
-# ETDRK4 is used here with a fixed time step. We compare it with adaptive explicit methods at their default tolerances. We time the second call to each solver, so compilation is not included. Each ETDRK4 step costs four evaluations of the nonlinear part, plus products with the precomputed diagonal exponentials, while each Tsit5 step costs six evaluations of the full right-hand side and each Vern9 step sixteen.
+# ETDRK4 is used here with a fixed time step. We compare it with adaptive explicit methods at their default tolerances. We time the second call to each solver, so compilation is not included. Each ETDRK4 step costs four evaluations of the nonlinear part, plus products with the precomputed diagonal exponentials, while each Tsit5 step costs six evaluations of the full right-hand side and each Vern9 step sixteen. The timings are measured when this page is built, so they depend on the machine that builds it; see the [report on stiff solvers and automatic differentiation](/pages/literated/stiff_solvers_report) for a discussion.
 
 function run(prob, alg; kwargs...)
     solve(prob, alg; save_everystep = false, kwargs...)
