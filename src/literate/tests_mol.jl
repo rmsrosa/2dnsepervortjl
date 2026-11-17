@@ -158,11 +158,9 @@ tspan = (0.0, 10.0)
 prob = ODEProblem(nsepervort_hat_rhs!, vort_init_hat, tspan, params)
 nothing
 
-#
+# We solve it with an explicit method. For implicit methods, which need the Jacobian of the right-hand side, see [Implicit solvers with the analytic Jacobian-vector product](/pages/literated/evolution_jvp) and [Exponential time differencing with ETDRK4](/pages/literated/evolution_etdrk4).
 
-OrdinaryDiffEq.ForwardDiff.can_dual(::Type{ComplexF64}) = true
-
-sol = solve(prob, Vern9()) # QNDF() etc.
+sol = solve(prob, Vern9())
 
 sol.retcode
 

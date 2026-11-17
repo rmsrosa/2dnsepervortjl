@@ -40,7 +40,7 @@
 # | Backend / test | Result |
 # | :--- | :--- |
 # | `Rodas5P()` with the default ForwardDiff | fails: `ForwardDiff.DerivativeConfig` has no method for a `ComplexF64` state |
-# | same, with `ForwardDiff.can_dual(::Type{ComplexF64}) = true` (the old workaround in [Evolution via method of lines](/pages/literated/tests_mol)) | fails in the same way; the workaround no longer has any effect |
+# | same, with `ForwardDiff.can_dual(::Type{ComplexF64}) = true` (a workaround formerly used in [Evolution via method of lines](/pages/literated/tests_mol)) | fails in the same way; the workaround no longer has any effect |
 # | `rfft` of an `Array{<:ForwardDiff.Dual}` | fails: `type ForwardDiff.Dual{...} not supported` |
 # | FFTW plan applied to an `Array{<:ForwardDiff.Dual}` | fails: no conversion from `Dual` to `Float64` |
 # | `Rodas5P(autodiff = AutoEnzyme())` | fails: Enzyme has no derivative rule for the FFTW C library calls (`No forward mode derivative found for ... fftw_alignment_of`) |

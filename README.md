@@ -7,10 +7,22 @@
 
 Simulation of homogeneous, incompressible Newtonian viscous flows in a fully-periodic two-dimensional domain under a given steady volume force, via [FFTW.jl](https://github.com/JuliaMath/FFTW.jl) and [DifferentialEquations.jl](https://github.com/SciML/DifferentialEquations.jl).
 
-## Choice of github actions
+## Building the site
 
-There are two workflows ready to be used, one that rebuilds the whole site during the github action (`.github/Deploy_build.yml`) and the other that simply uses the site built locally (`.github/Deploy_nobuild.yml`):
+The site is built with [Franklin.jl](https://github.com/tlienart/Franklin.jl), and the pages in `src/literate/` are executed with [Literate.jl](https://github.com/fredrikekre/Literate.jl) during the build. It requires Julia 1.13 or later.
 
-* If you want the github workflow to (re)build the whole site when deploying it, you should copy `.github/Deploy_build.yml` to `.github/workflows/Deploy.yml`, so it runs when new commits are pushed to `main`. It is also recommended to have `__site/` included in the `.gitignore` file, so it is not duplicated in the repo.
+The GitHub workflow `.github/workflows/Deploy.yml` builds the whole site, executing all the pages, on every push to `main`, and deploys the contents of `__site/` to the `gh-pages` branch. It also builds the site, without deploying it, on pull requests, so that errors in the pages show up before merging. It can also be triggered by hand, from the Actions tab.
 
-* If, however, you don't want to rebuild the site and simply want to use the site that was built locally, then you should copy `.github/Deploy_nobuild.yml` to `.github/workflows/Deploy.yml`, instead. This action simply moves the contents of `__site/` in the main branch to the root of the `gh-pages` branch, to serve the website. In this case, you should **not** have `__site/` included in the `.gitignore` file. Finally, you can view and edit your site with `serve`, but, when you think it is ready, you should build the site with `optimize` (e.g. `optimize(minify=false, prerender=false)`), so that the proper `prepath` is included in the generated html files.
+The generated files (`__site/`, `pages/literated/`, `generated/` and `_assets/pages/`) are not tracked in git.
+
+To preview the site locally:
+
+```julia
+julia> using Pkg; Pkg.activate("."); Pkg.instantiate()
+
+julia> using Franklin
+
+julia> serve()
+```
+
+A page in `src/literate/` is executed again only when its source is newer than the generated markdown file in `pages/literated/`; delete the latter to force it.
