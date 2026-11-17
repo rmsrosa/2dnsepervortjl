@@ -1,17 +1,61 @@
 name: Build and Deploy
+
 on:
   push:
     branches:
       - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-and-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      # Headless plotting with GR (Plots.jl)
+      GKSwstype: "100"
+      JULIA_NUM_THREADS: auto
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.13"
+
+      - name: Cache Julia packages
+        uses: julia-actions/cache@v2
+
+      - name: Install dependencies
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.precompile(); Pkg.status()'
+
+      # Executes every Literate page and builds the site into `__site/`. The pages in
+      # `src/literate/` are executed during the first pass, but the markdown files they
+      # generate in `pages/literated/` only get rendered in a second pass, which is quick
+      # since the pages are not executed again.
+      - name: Build site 🔧
+        run: |
+          julia --project=. -e '
+            using Franklin
+            optimize(minify=false, prerender=false)
+            optimize(minify=false, prerender=false)'
+
+      - name: Check the executed pages
+        run: julia --project=. .github/check_build.jl
+
+      - run: touch __site/.nojekyll
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.2.5
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: __site
