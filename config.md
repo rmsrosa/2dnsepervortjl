@@ -53,6 +53,9 @@ menu = [
     ]
     "Evolution Tests" => [
         "src/literate/tests_mol.jl"
+        "src/literate/evolution_jvp.jl"
+        "src/literate/evolution_etdrk4.jl"
+        "src/literate/stiff_solvers_report.jl"
     ]
     "Simulations"
     "pages/references"
