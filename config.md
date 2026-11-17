@@ -48,7 +48,6 @@ menu = [
     "FFTW Tests" => [
         "src/literate/tests_basic.jl"
         "src/literate/tests_fft_plan.jl"
-        "src/literate/benchmark_fft_plan.jl"
         "src/literate/tests_bilinear.jl"
     ]
     "Evolution Tests" => [

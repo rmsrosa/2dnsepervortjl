@@ -15,6 +15,8 @@ The GitHub workflow `.github/workflows/Deploy.yml` builds the whole site, execut
 
 The generated files (`__site/`, `pages/literated/`, `generated/` and `_assets/pages/`) are not tracked in git.
 
+Long-running benchmarks are not part of the site; they are in [`benchmarks/`](benchmarks/), to be run separately.
+
 To preview the site locally:
 
 ```julia
