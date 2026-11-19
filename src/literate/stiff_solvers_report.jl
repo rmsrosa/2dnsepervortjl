@@ -112,9 +112,9 @@
 #
 # At $N = 32$, with the dense Jacobian assembled column by column from the analytic jvp, `QNDF`, `KenCarp4` and `FBDF` work, as does `Rodas5P`, once `tgrad` is given.
 
-# ### A turbulent case
+# ### A strongly nonlinear case
 #
-# With $\nu = 0.01$, the initial vorticity used here is large enough for the flow to be turbulent. All methods, including `Vern9()`, then give relative errors of order one at $t = 1$, at the default tolerances, compared with the tight-tolerance reference. This reflects the sensitivity to the initial conditions of the flow, not a failure of the methods, and such cases are not useful for comparing accuracy.
+# With $\nu = 0.01$, the initial vorticity used here is large enough for the flow to be strongly nonlinear, with small differences growing quickly. All methods, including `Vern9()`, then give relative errors of order one at $t = 1$, at the default tolerances, compared with the tight-tolerance reference. This reflects the sensitivity to the initial conditions of the flow, not a failure of the methods, and such cases are not useful for comparing accuracy.
 
 # ## Conclusions
 
@@ -122,4 +122,5 @@
 # * The Jacobian is dense, so it should be used matrix-free, with a Krylov linear solver, except on small grids.
 # * The state should be stored as a real array for the implicit methods.
 # * For the viscous, moderately stiff case $\nu = 1$, $N = 128$, `QNDF` with the analytic jvp and GMRES was the fastest of the implicit methods, somewhat faster than `Tsit5()`, and `ETDRK4` was faster still, for comparable accuracy. The advantage of the stiff and exponential methods grows with $N$ and $\nu$ (the stiffness scales with $\nu N^2$) and in long runs towards a steady state; for less viscous, more nonlinear regimes, explicit adaptive methods remain competitive.
+# * These comparisons are for a large viscosity, where the viscous term limits the time step. For weakly turbulent flows, where advection dominates, see [Time stepping for weakly turbulent flows](/pages/turbulence_timestepping).
 # * If AD becomes necessary, for instance for sensitivities with respect to parameters, the obstacle is still the FFT: neither ForwardDiff nor Enzyme can differentiate through FFTW plans out of the box.
