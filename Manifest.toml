@@ -708,10 +708,10 @@ uuid = "4e289a0a-7415-4d19-859d-a7e5c4648b56"
 version = "1.0.7"
 
 [[deps.EnzymeCore]]
-git-tree-sha1 = "d88c803e26799193db42e47f6e1e28eeb0322e4d"
+git-tree-sha1 = "63b801155bed4327c7a06cb4dcfab73c7fa79be1"
 registries = "General"
 uuid = "f151be2c-9106-41f4-ab19-57ee4f262869"
-version = "0.8.27"
+version = "0.8.28"
 weakdeps = ["Adapt", "ChainRulesCore"]
 
     [deps.EnzymeCore.extensions]

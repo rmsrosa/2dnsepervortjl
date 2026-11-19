@@ -495,14 +495,14 @@ plans &#61; plan, plan_inv</code></pre>
         &#40;rdft2-r2hc-direct-4 &quot;r2cf_4&quot;&#41;
         &#40;rdft2-r2hc01-direct-4 &quot;r2cfII_4&quot;&#41;&#41;
       &#40;dft-direct-64-x2 &quot;n2fv_64_avx2&quot;&#41;&#41;&#41;
-  &#40;dft-buffered-256-x43/129-6
-    &#40;dft-vrank&gt;&#61;1-x43/1
-      &#40;dft-ct-dit/16
-        &#40;dftw-direct-16/120 &quot;t2fv_16_avx2&quot;&#41;
-        &#40;dft-direct-16-x16 &quot;n1fv_16_avx2&quot;&#41;&#41;&#41;
-    &#40;dft-r2hc-1
-      &#40;rdft-rank0-iter-co/2-x43-x256&#41;&#41;
-    &#40;dft-nop&#41;&#41;&#41;, 1.52587890625e-5 * FFTW complex-to-real plan for 129×256 array of ComplexF64
+  &#40;dft-vrank&gt;&#61;1-x129/1
+    &#40;dft-ct-dit/4
+      &#40;dftw-direct-4/12 &quot;t1fuv_4_avx2&quot;&#41;
+      &#40;dft-buffered-64-x4/4-6
+        &#40;dft-direct-64-x4 &quot;n1fv_64_avx2&quot;&#41;
+        &#40;dft-r2hc-1
+          &#40;rdft-rank0-iter-ci/2-x4-x64&#41;&#41;
+        &#40;dft-nop&#41;&#41;&#41;&#41;&#41;, 1.52587890625e-5 * FFTW complex-to-real plan for 129×256 array of ComplexF64
 &#40;rdft2-rank&gt;&#61;2/1
   &#40;rdft2-vrank&gt;&#61;1-x256/1
     &#40;rdft2-ct-dif/4
@@ -511,12 +511,13 @@ plans &#61; plan, plan_inv</code></pre>
         &#40;rdft2-hc2r10-direct-4 &quot;r2cbIII_4&quot;&#41;&#41;
       &#40;dft-direct-64-x2 &quot;n1bv_64_avx2&quot;&#41;&#41;&#41;
   &#40;dft-vrank&gt;&#61;1-x129/1
-    &#40;dft-ct-dit/2
-      &#40;dftw-direct-2/4 &quot;t1buv_2_avx2&quot;&#41;
-      &#40;dft-ct-dif/2
-        &#40;dftw-directsq-2/4-x2 &quot;q1bv_2_avx2&quot;&#41;
-        &#40;dft-vrank&gt;&#61;1-x2/1
-          &#40;dft-direct-64-x2 &quot;n1bv_64_avx2&quot;&#41;&#41;&#41;&#41;&#41;&#41;&#41;</code></pre>
+    &#40;dft-ct-dit/4
+      &#40;dftw-direct-4/12 &quot;t1buv_4_avx2&quot;&#41;
+      &#40;dft-buffered-64-x4/4-6
+        &#40;dft-direct-64-x4 &quot;n1bv_64_avx2&quot;&#41;
+        &#40;dft-r2hc-1
+          &#40;rdft-rank0-iter-ci/2-x4-x64&#41;&#41;
+        &#40;dft-nop&#41;&#41;&#41;&#41;&#41;&#41;</code></pre>
 <h2 id="check_results"><a href="#check_results" class="header-anchor">Check results</a></h2>
 <p>As a first test, we check that all implementations return about the same vector</p>
 <pre><code class="language-julia">@testset &quot;same result bilinear terms&quot; begin
@@ -571,7 +572,7 @@ plans &#61; plan, plan_inv</code></pre>
 end
 nothing</code></pre>
 <pre><code class="language-julia">Test Summary:              | Pass  Total  Time
-same result bilinear terms |    6      6  2.2s</code></pre>
+same result bilinear terms |    6      6  2.4s</code></pre>
 <h2 id="orthogonality"><a href="#orthogonality" class="header-anchor">Orthogonality</a></h2>
 <p>As a second test, we check the orthogonality condition of the bilinear term.</p>
 <p>Due to the periodicity and the divergence-free conditions, we should have \((B(\omega), \omega)_{L^2} = 0\). We compute \(B(\omega)\) in spectral space and transform it to physical space in order to check that.</p>
@@ -580,7 +581,7 @@ bilin_naive &#61; irfft&#40;bilin_hat_naive, N&#41;
 nothing</code></pre>
 <p>We compute the inner product by summing over the nodal values and multiplying that by the area element \(\Delta x \Delta y = (L/N)^2\). Notice computing the inner product as such has an inherent numerical error, which is also of the order of the area element, so we don&#39;t expect the output to be of machine precision.</p>
 <pre><code class="language-julia">sum&#40;bilin_naive .* vort&#41; * &#40;L / N&#41;^2</code></pre>
-<pre><code class="language-julia">2.0226287679479644e8</code></pre>
+<pre><code class="language-julia">2.7915005480794e8</code></pre>
 <p>In spectral space, due to Parseval&#39;s identity, this translates to the following &#40;except we need to correct for some indices...&#41;</p>
 <pre><code class="language-julia">M &#61; iseven&#40;N&#41; ? div&#40;N, 2&#41; : div&#40;N, 2&#41; &#43; 1
 
@@ -589,7 +590,7 @@ nothing</code></pre>
     &#43; sum&#40;bilin_hat_naive&#91;1,:&#93; .* conj.&#40;vort_hat&#91;1,:&#93;&#41;&#41;
     &#43; sum&#40;bilin_hat_naive&#91;M&#43;1:end,:&#93; .* conj.&#40;vort_hat&#91;M&#43;1:end,:&#93;&#41;&#41;
 &#41; / N^2 * &#40;L / N&#41;^2</code></pre>
-<pre><code class="language-julia">9.709932547585063e-6 &#43; 5.88774548499474e9im</code></pre>
+<pre><code class="language-julia">1.8122339497586391e-6 - 5.788767951834073e8im</code></pre>
 <p>Hmm, something is wrong...</p>
 <h2 id="benchmark"><a href="#benchmark" class="header-anchor">Benchmark</a></h2>
 <pre><code class="language-julia">@info &quot;bilinear_naive&quot;
@@ -613,19 +614,19 @@ nothing</code></pre>
 @info &quot;bilinear_Basdevant_plan_doubleloop&#33;&quot;
 @btime bilinear_Basdevant_plan_doubleloop&#33;&#40;bh, vh, p&#41; setup &#61; &#40;bh &#61; similar&#40;&#36;vort_hat&#41;; vh &#61; copy&#40;&#36;vort_hat&#41;; p &#61; &#36;&#40;operators, vars, auxs, plans&#41;&#41;;</code></pre>
 <pre><code class="language-julia">&#91; Info: bilinear_naive
-  1.222 ms &#40;90 allocations: 8.05 MiB&#41;
+  1.471 ms &#40;90 allocations: 8.05 MiB&#41;
 &#91; Info: bilinear_auxs&#33;
-  1.244 ms &#40;75 allocations: 5.53 MiB&#41;
+  1.646 ms &#40;75 allocations: 5.53 MiB&#41;
 &#91; Info: bilinear_Basdevant_brdcst
-  1.009 ms &#40;79 allocations: 7.54 MiB&#41;
+  1.239 ms &#40;79 allocations: 7.54 MiB&#41;
 &#91; Info: bilinear_plan_brdcst&#33;
-  725.521 μs &#40;0 allocations: 0 bytes&#41;
+  1.083 ms &#40;0 allocations: 0 bytes&#41;
 &#91; Info: bilin_hat_Basdevant_plan_brdcst&#33;
-  590.572 μs &#40;0 allocations: 0 bytes&#41;
+  877.102 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: bilinear_Basdevant_plan_loop&#33;
-  564.704 μs &#40;0 allocations: 0 bytes&#41;
+  876.717 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: bilinear_Basdevant_plan_doubleloop&#33;
-  565.194 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
+  892.703 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
 <h2 id="conclusions"><a href="#conclusions" class="header-anchor">Conclusions</a></h2>
 <p>Clearly, <code>bilinear_naive</code> is pretty bad, in great part because of the use of the allocating transforms <code>rfft</code> and <code>irfft</code>.</p>
 <p>The method <code>bilinear_auxs&#33;</code> saves some allocations but is pretty slow as well, due to also using <code>rfft</code> and <code>irfft</code>.</p>

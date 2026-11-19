@@ -399,12 +399,12 @@ for &#40;name, alg&#41; in methods
         &quot;steps: &quot;, sol.stats.naccept
     &#41;
 end</code></pre>
-<pre><code class="language-julia">Tsit5 &#40;explicit&#41;          Success   time: 1.039  s   relerr: 1.6e-9   f &#43; jvp evals: 5871   steps: 978
-Vern9 &#40;explicit&#41;          Success   time: 2.199  s   relerr: 2.3e-11  f &#43; jvp evals: 12402  steps: 775
-QNDF &#43; jvp &#43; GMRES        Success   time: 0.581  s   relerr: 4.8e-8   f &#43; jvp evals: 1990   steps: 183
-FBDF &#43; jvp &#43; GMRES        Success   time: 0.709  s   relerr: 5.3e-6   f &#43; jvp evals: 2310   steps: 216
-KenCarp47 &#43; jvp &#43; GMRES   Success   time: 0.946  s   relerr: 2.9e-7   f &#43; jvp evals: 3301   steps: 19
-TRBDF2 &#43; jvp &#43; GMRES      Success   time: 0.712  s   relerr: 1.9e-5   f &#43; jvp evals: 2434   steps: 28</code></pre>
+<pre><code class="language-julia">Tsit5 &#40;explicit&#41;          Success   time: 1.283  s   relerr: 1.6e-9   f &#43; jvp evals: 5871   steps: 978
+Vern9 &#40;explicit&#41;          Success   time: 2.73   s   relerr: 2.3e-11  f &#43; jvp evals: 12402  steps: 775
+QNDF &#43; jvp &#43; GMRES        Success   time: 0.787  s   relerr: 4.8e-8   f &#43; jvp evals: 1990   steps: 183
+FBDF &#43; jvp &#43; GMRES        Success   time: 1.092  s   relerr: 3.7e-6   f &#43; jvp evals: 2671   steps: 224
+KenCarp47 &#43; jvp &#43; GMRES   Success   time: 1.233  s   relerr: 2.9e-7   f &#43; jvp evals: 3301   steps: 19
+TRBDF2 &#43; jvp &#43; GMRES      Success   time: 0.918  s   relerr: 1.9e-5   f &#43; jvp evals: 2434   steps: 28</code></pre>
 <h2 id="convergence_to_the_steady_state"><a href="#convergence_to_the_steady_state" class="header-anchor">Convergence to the steady state</a></h2>
 <p>The forcing has a single mode and the viscosity is large, so the solution converges to the steady state \(\omega_\infty = -\Delta^{-1}g\). With the implicit method, we can take large time steps once the transient has decayed.</p>
 <pre><code class="language-julia">prob_long &#61; ODEProblem&#40;fun, u0, &#40;0.0, 10.0&#41;, params&#41;

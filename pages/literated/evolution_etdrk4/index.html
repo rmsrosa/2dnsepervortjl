@@ -356,12 +356,12 @@ for dt in dts
     report&#40;&quot;ETDRK4 dt&#61;&#36;dt&quot;, sol, elapsed, relerr&#41;
     push&#33;&#40;relerrs, relerr&#41;
 end</code></pre>
-<pre><code class="language-julia">Tsit5 &#40;explicit&#41;      Success   time: 0.851  s   relerr: 4.1e-10  steps: 979
-Vern9 &#40;explicit&#41;      Success   time: 1.767  s   relerr: 1.9e-11  steps: 775
-ETDRK4 dt&#61;0.01        Success   time: 0.468  s   relerr: 8.2e-5   steps: 100
-ETDRK4 dt&#61;0.005       Success   time: 0.18   s   relerr: 5.5e-6   steps: 200
-ETDRK4 dt&#61;0.0025      Success   time: 0.311  s   relerr: 4.0e-7   steps: 401
-ETDRK4 dt&#61;0.00125     Success   time: 0.55   s   relerr: 2.8e-8   steps: 801</code></pre>
+<pre><code class="language-julia">Tsit5 &#40;explicit&#41;      Success   time: 1.15   s   relerr: 4.1e-10  steps: 979
+Vern9 &#40;explicit&#41;      Success   time: 2.426  s   relerr: 1.2e-11  steps: 775
+ETDRK4 dt&#61;0.01        Success   time: 0.302  s   relerr: 8.2e-5   steps: 100
+ETDRK4 dt&#61;0.005       Success   time: 0.221  s   relerr: 5.5e-6   steps: 200
+ETDRK4 dt&#61;0.0025      Success   time: 0.386  s   relerr: 4.0e-7   steps: 401
+ETDRK4 dt&#61;0.00125     Success   time: 0.719  s   relerr: 2.8e-8   steps: 801</code></pre>
 <p>The observed order of convergence, which should approach 4 as the time step decreases:</p>
 <pre><code class="language-julia">log2.&#40;relerrs&#91;1:end-1&#93; ./ relerrs&#91;2:end&#93;&#41;</code></pre>
 <pre><code class="language-julia">3-element Vector&#123;Float64&#125;:
