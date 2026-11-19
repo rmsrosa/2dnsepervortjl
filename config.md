@@ -55,6 +55,7 @@ menu = [
         "src/literate/evolution_jvp.jl"
         "src/literate/evolution_etdrk4.jl"
         "src/literate/stiff_solvers_report.jl"
+        "pages/turbulence_timestepping"
     ]
     "Simulations"
     "pages/references"

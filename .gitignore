@@ -10,3 +10,8 @@ pages/literated/
 generated/
 _assets/pages/
 benchmarks/output/
+benchmarks/turbulence/warm_*/
+benchmarks/turbulence/results/
+benchmarks/turbulence/figs/
+benchmarks/turbulence/*.log
+benchmarks/turbulence/jobs.txt
