@@ -111,6 +111,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/turbulence_timestepping">7.5. Time stepping for weakly turbulent flows</a></li>
+    </div>
     <div class="menu-level-1">
     <li>8. Simulations</li>
     </div>
@@ -313,23 +316,23 @@ Planned FFTW with EXHAUSTIVE |    5      5  0.0s</code></pre>
     w &#61; copy&#40;&#36;vort&#41;
 &#41;;</code></pre>
 <pre><code class="language-julia">&#91; Info: FFTW no plan
-  90.820 μs &#40;12 allocations: 164.82 KiB&#41;
+  67.480 μs &#40;12 allocations: 164.82 KiB&#41;
 &#91; Info: FFTW plan with ESTIMATE
-  91.791 μs &#40;3 allocations: 164.34 KiB&#41;
+  65.636 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with ESTIMATE and mul&#33;
-  91.130 μs &#40;0 allocations: 0 bytes&#41;
+  63.614 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: FFTW plan with MEASURE
-  50.996 μs &#40;3 allocations: 164.34 KiB&#41;
+  35.392 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with MEASURE and mul&#33;
-  50.354 μs &#40;0 allocations: 0 bytes&#41;
+  35.102 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: FFTW plan with PATIENT
-  49.623 μs &#40;3 allocations: 164.34 KiB&#41;
+  39.448 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with PATIENT and mul&#33;
-  48.581 μs &#40;0 allocations: 0 bytes&#41;
+  34.331 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: FFTW plan with EXHAUSTIVE
-  49.332 μs &#40;3 allocations: 164.34 KiB&#41;
+  41.231 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with EXHAUSTIVE and mul&#33;
-  48.130 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
+  34.221 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
 <h2 id="direct_and_inverse_transforms"><a href="#direct_and_inverse_transforms" class="header-anchor">Direct and inverse transforms</a></h2>
 <p>Here we compare the timings between direct and inverse transforms. We restrict this to using <code>mul&#33;</code>, since this is what we will use at the end. <strong>Notice the direct transform is slightly faster than the inverse transform.</strong></p>
 <p>Only one note of <strong>warning:</strong> when using <code>mul&#33;</code> with an inverse transform plan, the last argument may mutate. Type <code>@edit mul&#33;&#40;vort, plan_inv_estimate.p, vort_hat&#41;</code> to see where this happens.</p>
@@ -381,17 +384,17 @@ Planned FFTW with EXHAUSTIVE |    5      5  0.0s</code></pre>
     w_hat &#61; copy&#40;&#36;vort_hat&#41;
 &#41;;</code></pre>
 <pre><code class="language-julia">&#91; Info: Direct and inverse FFTW plan with ESTIMATE and mul&#33;
-  91.111 μs &#40;0 allocations: 0 bytes&#41;
-  98.003 μs &#40;0 allocations: 0 bytes&#41;
+  63.694 μs &#40;0 allocations: 0 bytes&#41;
+  68.101 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: Direct and inverse FFTW plan with MEASURE and mul&#33;
-  50.625 μs &#40;0 allocations: 0 bytes&#41;
-  52.217 μs &#40;0 allocations: 0 bytes&#41;
+  35.232 μs &#40;0 allocations: 0 bytes&#41;
+  36.865 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: Direct and inverse FFTW plan with PATIENT and mul&#33;
-  48.801 μs &#40;0 allocations: 0 bytes&#41;
-  50.594 μs &#40;0 allocations: 0 bytes&#41;
+  34.140 μs &#40;0 allocations: 0 bytes&#41;
+  35.732 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: Direct and inverse FFTW plan with EXHAUSTIVE and mul&#33;
-  48.380 μs &#40;0 allocations: 0 bytes&#41;
-  50.264 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
+  34.261 μs &#40;0 allocations: 0 bytes&#41;
+  36.144 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
 
     <div class="navbar">
     <p id="nav">
@@ -415,7 +418,7 @@ Planned FFTW with EXHAUSTIVE |    5      5  0.0s</code></pre>
         </div>
     
 
-    Last modified: November 17, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+    Last modified: November 19, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
 </div><!-- CONTENT ENDS HERE -->
 
       </div> <!-- .books-content -->

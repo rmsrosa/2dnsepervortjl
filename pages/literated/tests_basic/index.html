@@ -113,6 +113,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/turbulence_timestepping">7.5. Time stepping for weakly turbulent flows</a></li>
+    </div>
     <div class="menu-level-1">
     <li>8. Simulations</li>
     </div>
@@ -276,7 +279,7 @@ nothing</code></pre>
 end
 nothing</code></pre>
 <pre><code class="language-julia">Test Summary:   | Pass  Total  Time
-Check operators |    5      5  1.1s</code></pre>
+Check operators |    5      5  0.9s</code></pre>
 <h2 id="one-mode_steady_state"><a href="#one-mode_steady_state" class="header-anchor">One-mode steady state</a></h2>
 <p>For forced-periodic flows, when the forcing function contains a single Fourier mode, there is a corresponding steady state vorticity function corresponding also to that single-mode in Fourier space, only with a different amplitude.</p>
 <p>In order to construct such pairs of forcing mode / steady state, we set the viscosity of the flow, choose the mode to be forced and define the strength of that force:</p>
@@ -341,7 +344,7 @@ nothing</code></pre>
 end
 nothing</code></pre>
 <pre><code class="language-julia">Test Summary:                         | Pass  Total  Time
-Check single-mode stable steady state |    5      5  1.4s</code></pre>
+Check single-mode stable steady state |    5      5  1.1s</code></pre>
 <p>All seems good.</p>
 
     <div class="navbar">
@@ -366,7 +369,7 @@ Check single-mode stable steady state |    5      5  1.4s</code></pre>
         </div>
     
 
-    Last modified: November 17, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+    Last modified: November 19, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
 </div><!-- CONTENT ENDS HERE -->
 
       </div> <!-- .books-content -->

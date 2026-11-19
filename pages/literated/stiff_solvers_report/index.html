@@ -102,6 +102,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/turbulence_timestepping">7.5. Time stepping for weakly turbulent flows</a></li>
+    </div>
     <div class="menu-level-1">
     <li>8. Simulations</li>
     </div>
@@ -128,7 +131,7 @@
 <a class="menu-level-1" href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4 <kbd>←</kbd></a>
 </span>
 <span id="nav-next" style="float: right;">
-    <a class="menu-level-1" href="/2dnsepervortjl/pages/references"><kbd>→</kbd> 9. References</a>
+    <a class="menu-level-1" href="/2dnsepervortjl/pages/turbulence_timestepping"><kbd>→</kbd> 7.5. Time stepping for weakly turbulent flows</a>
 </span>
     </p>
 </div>
@@ -229,8 +232,8 @@
 <p>The IMEX multistep method <code>CNAB2&#40;&#41;</code>, with <code>dt &#61; 1e-3</code>, worked but was very slow in this setup &#40;about 87 s for \(t \in [0, 1]\), with a relative error of \(7 \times 10^{-4}\)&#41;; we did not investigate why.</p>
 <h3 id="small_grids_dense_jacobian"><a href="#small_grids_dense_jacobian" class="header-anchor">Small grids, dense Jacobian</a></h3>
 <p>At \(N = 32\), with the dense Jacobian assembled column by column from the analytic jvp, <code>QNDF</code>, <code>KenCarp4</code> and <code>FBDF</code> work, as does <code>Rodas5P</code>, once <code>tgrad</code> is given.</p>
-<h3 id="a_turbulent_case"><a href="#a_turbulent_case" class="header-anchor">A turbulent case</a></h3>
-<p>With \(\nu = 0.01\), the initial vorticity used here is large enough for the flow to be turbulent. All methods, including <code>Vern9&#40;&#41;</code>, then give relative errors of order one at \(t = 1\), at the default tolerances, compared with the tight-tolerance reference. This reflects the sensitivity to the initial conditions of the flow, not a failure of the methods, and such cases are not useful for comparing accuracy.</p>
+<h3 id="a_strongly_nonlinear_case"><a href="#a_strongly_nonlinear_case" class="header-anchor">A strongly nonlinear case</a></h3>
+<p>With \(\nu = 0.01\), the initial vorticity used here is large enough for the flow to be strongly nonlinear, with small differences growing quickly. All methods, including <code>Vern9&#40;&#41;</code>, then give relative errors of order one at \(t = 1\), at the default tolerances, compared with the tight-tolerance reference. This reflects the sensitivity to the initial conditions of the flow, not a failure of the methods, and such cases are not useful for comparing accuracy.</p>
 <h2 id="conclusions"><a href="#conclusions" class="header-anchor">Conclusions</a></h2>
 <ul>
 <li><p>No AD is needed: since the nonlinear term is bilinear, the Jacobian-vector product is a few lines of code and costs about one and a half evaluations of the right-hand side.</p>
@@ -240,6 +243,8 @@
 <li><p>The state should be stored as a real array for the implicit methods.</p>
 </li>
 <li><p>For the viscous, moderately stiff case \(\nu = 1\), \(N = 128\), <code>QNDF</code> with the analytic jvp and GMRES was the fastest of the implicit methods, somewhat faster than <code>Tsit5&#40;&#41;</code>, and <code>ETDRK4</code> was faster still, for comparable accuracy. The advantage of the stiff and exponential methods grows with \(N\) and \(\nu\) &#40;the stiffness scales with \(\nu N^2\)&#41; and in long runs towards a steady state; for less viscous, more nonlinear regimes, explicit adaptive methods remain competitive.</p>
+</li>
+<li><p>These comparisons are for a large viscosity, where the viscous term limits the time step. For weakly turbulent flows, where advection dominates, see <a href="/2dnsepervortjl/pages/turbulence_timestepping">7.5. Time stepping for weakly turbulent flows</a>.</p>
 </li>
 <li><p>If AD becomes necessary, for instance for sensitivities with respect to parameters, the obstacle is still the FFT: neither ForwardDiff nor Enzyme can differentiate through FFTW plans out of the box.</p>
 </li>
@@ -251,7 +256,7 @@
 <a class="menu-level-1" href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4 <kbd>←</kbd></a>
 </span>
 <span id="nav-next" style="float: right;">
-    <a class="menu-level-1" href="/2dnsepervortjl/pages/references"><kbd>→</kbd> 9. References</a>
+    <a class="menu-level-1" href="/2dnsepervortjl/pages/turbulence_timestepping"><kbd>→</kbd> 7.5. Time stepping for weakly turbulent flows</a>
 </span>
     </p>
 </div>
@@ -267,7 +272,7 @@
         </div>
     
 
-    Last modified: November 17, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+    Last modified: November 19, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
 </div><!-- CONTENT ENDS HERE -->
 
       </div> <!-- .books-content -->

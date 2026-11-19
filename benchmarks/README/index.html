@@ -113,6 +113,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/turbulence_timestepping">7.5. Time stepping for weakly turbulent flows</a></li>
+    </div>
     <div class="menu-level-1">
     <li>8. Simulations</li>
     </div>
@@ -144,6 +147,8 @@
 <ul>
 <li><p><code>benchmark_fft_plan.jl</code>: benchmarks of the FFTW planning flags &#40;<code>ESTIMATE</code>, <code>MEASURE</code>, <code>PATIENT</code> and <code>EXHAUSTIVE</code>&#41; for several grid sizes, up to \(N = 2100\). It takes about half an hour, mostly planning with <code>PATIENT</code> and <code>EXHAUSTIVE</code> for the larger grids.</p>
 </li>
+<li><p><code>turbulence/</code>: the comparison of time-stepping methods for a weakly turbulent flow reported in the page &quot;Time stepping for weakly turbulent flows&quot; &#40;warm-up, runs of all the methods, timings and analysis&#41;. Run <code>bash run_all.sh</code> from that folder; it takes about 1.5 hours on 4 cores.</p>
+</li>
 <li><p><code>benchmark_stiff_solvers.jl</code>: the benchmark reported in the page &quot;Stiff solvers, Jacobians and automatic differentiation&quot;, comparing explicit, implicit &#40;with the analytic Jacobian-vector product&#41; and exponential &#40;ETDRK4&#41; solvers. It takes about a minute.</p>
 </li>
 </ul>
@@ -164,7 +169,7 @@
         </div>
     
 
-    Last modified: November 17, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+    Last modified: November 19, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
 </div><!-- CONTENT ENDS HERE -->
 
       </div> <!-- .books-content -->

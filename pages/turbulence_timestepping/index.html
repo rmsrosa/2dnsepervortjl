@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="" />
+  <meta name="author" content="and contributors" />
+   <title>Time stepping for weakly turbulent flows</title>  
+  <link rel="shortcut icon" type="image/png" href="/2dnsepervortjl/assets/images/favicon.png"/>
+  <link rel="stylesheet" href="/2dnsepervortjl/css/base.css"/>
+  
+    <link rel="stylesheet" href="/2dnsepervortjl/css/base_showaside.css"/>
+  
+  <script src="/2dnsepervortjl/libs/mousetrap/mousetrap.min.js"></script>
+
+  
+
+  
+    <link rel="stylesheet" href="/2dnsepervortjl/libs/katex/katex.min.css">
+  
+</head>
+
+<body>
+
+  <div class="books-container">
+
+  <aside class="books-menu">
+  <input type="checkbox" id="menu">
+  <label for="menu">☰</label>
+
+  <div class="books-title">
+    <a href="/2dnsepervortjl/">Two-dimensional periodic flows</a>
+  </div>
+
+  <br />
+
+  <div class="books-subtitle">
+    Pseudo-spectral simulation in Julia
+  </div>
+
+  <br />
+
+  <div class="books-author">
+    <a href="https://rmsrosa.github.io">Ricardo M. S. Rosa</a>
+  </div>
+
+  <div class="books-menu-content">
+    <div class="menu-level-1">
+    <li><a href="/2dnsepervortjl/pages/intro">Introduction</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>1. Mathematical Formulation</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/pressure-velocity">1.1. Pressure-velocity formulation</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/vorticity">1.2. Vorticity formulation</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/basdevant">1.3. Basdevant reduction</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/stream">1.4. Stream function</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>2. Spectral Formulation</li>
+    </div>
+    <div class="menu-level-1">
+    <li>3. Discrete Fourier Transform</li>
+    </div>
+    <div class="menu-level-1">
+    <li>4. Physical Quantities</li>
+    </div>
+    <div class="menu-level-1">
+    <li>5. Two-dimensional turbulence</li>
+    </div>
+    <div class="menu-level-1">
+    <li>6. FFTW Tests</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_basic">6.1. Direct and inverse FFTW</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_fft_plan">6.2. FFTW plans</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_bilinear">6.3. Approximations of the bilinear term</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>7. Evolution Tests</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/tests_mol">7.1. Evolution via method of lines</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/evolution_jvp">7.2. Implicit solvers with the analytic Jacobian-vector product</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/evolution_etdrk4">7.3. Exponential time differencing with ETDRK4</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/turbulence_timestepping">7.5. Time stepping for weakly turbulent flows</a></li>
+    </div>
+    <div class="menu-level-1">
+    <li>8. Simulations</li>
+    </div>
+    <div class="menu-level-1">
+    <li><a href="/2dnsepervortjl/pages/references">9. References</a></li>
+    </div>
+<div>
+
+
+  
+    <a href="https://github.com/rmsrosa/2dnsepervortjl"><img src="/2dnsepervortjl/assets/images/GitHub-Mark-32px.png" alt="GitHub repo" width="18" style="margin:5px 5px" align="left"></a>
+
+  
+
+</aside>
+
+
+  <div class="books-content">
+
+    
+      <div class="navbar">
+    <p id="nav">
+<span id="nav-prev" style="float: left;">
+<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation <kbd>←</kbd></a>
+</span>
+<span id="nav-next" style="float: right;">
+    <a class="menu-level-1" href="/2dnsepervortjl/pages/references"><kbd>→</kbd> 9. References</a>
+</span>
+    </p>
+</div>
+</br></br>
+
+    
+
+    
+      
+    
+<h1 id="get_title"><a href="#get_title" class="header-anchor">7.5. Time stepping for weakly turbulent flows</a></h1>
+<p>The comparisons in <a href="/2dnsepervortjl/pages/literated/stiff_solvers_report">Stiff solvers, Jacobians and automatic differentiation</a> were made at a large viscosity, \(\nu = 1\), where the flow converges to a steady state and the time step is limited by the viscous term. Here we look at the opposite regime: a small viscosity and a multi-mode forcing, which sustain a seemingly weakly turbulent, chaotic flow, where advection is the dominant term. We compare explicit, exponential and implicit-explicit &#40;IMEX&#41; methods by the cost of computing the <em>statistics</em> of the flow.</p>
+<p>The results come from a single experiment, run once on a 4-core Linux machine, and are reported as static tables and figures; nothing is executed when this page is built. The scripts that reproduce them are in the folder <a href="https://github.com/rmsrosa/2dnsepervortjl/tree/main/benchmarks/turbulence"><code>benchmarks/turbulence/</code></a> of the repository.</p>
+<h2 id="which_term_limits_the_time_step"><a href="#which_term_limits_the_time_step" class="header-anchor">Which term limits the time step?</a></h2>
+<p>In spectral space, the viscous term \(\nu\Delta\omega\) is diagonal, with real eigenvalues down to \(-\nu k_{\max}^2\), while the advection term has nearly imaginary eigenvalues of size up to about \(k_{\max}(|u|_{\max} + |v|_{\max})\), where \(k_{\max}\) is the largest retained wavenumber. For an explicit or exponential scheme, the step is limited by whichever of the two rates</p>
+\[
+\nu k_{\max}^2 \qquad \text{and} \qquad k_{\max}\left(|u|_{\max} + |v|_{\max}\right)
+\]
+<p>is larger. For the setup of the earlier pages &#40;\(N = 128\), <code>Nsub &#61; 84</code>, so \(k_{\max} = 41\), the same initial condition and single-mode forcing&#41;, the ratio between the viscous and the advective rates is:</p>
+<table><tr><th align="left">\(\nu\)</th><th align="right">\(t = 0\)</th><th align="right">\(t = 1\)</th><th align="right">\(t = 10\)</th></tr><tr><td align="left">1</td><td align="right">0.67</td><td align="right"><strong>180</strong></td><td align="right"><strong>180</strong></td></tr><tr><td align="left">0.1</td><td align="right">0.067</td><td align="right">0.66</td><td align="right">1.5</td></tr><tr><td align="left">0.01</td><td align="right">0.0067</td><td align="right">0.007</td><td align="right">0.011</td></tr></table>
+<p>So, for \(\nu = 1\), after a short transient, the problem is stiff because of the viscous term, and implicit and exponential methods pay off. For small \(\nu\), advection is about a hundred times faster than viscous decay, the problem is not stiff, and the step is limited by a CFL-type condition</p>
+\[
+\Delta t \lesssim \frac{c}{k_{\max}\left(|u|_{\max} + |v|_{\max}\right)},
+\]
+<p>where \(c\) is the extent of the stability region of the method along the imaginary axis &#40;\(c = 2\sqrt{2} \approx 2.8\) for the classical fourth-order Runge-Kutta method, \(\sqrt{3} \approx 1.7\) for the three-stage strong-stability-preserving method <code>SSPRK33</code>&#41;.</p>
+<p>Consequences, to be checked by the experiment below:</p>
+<ul>
+<li><p>ETDRK4 integrates \(\nu\Delta\) exactly, but this no longer helps much: as \(\nu \to 0\), ETDRK4 reduces to the classical RK4 method, with the same stability limit along the imaginary axis.</p>
+</li>
+<li><p>Implicit methods are not suitable. Steps beyond the CFL limit do not resolve the advection of the small scales, and implicit methods then damp them or shift their phase, which biases exactly the small-scale statistics; the Jacobian is dominated by advection, so the linear solves need many iterations; and BDF methods of order three and higher are not stable near the imaginary axis.</p>
+</li>
+<li><p>For a chaotic flow, what matters is not the error along trajectories, which grows exponentially anyway, but the bias in the long-time statistics, a kind of weak convergence, as for stochastic differential equations. With a fourth-order method at the stability limit, this bias is expected to be much smaller than the sampling error of the time averages, so the cost is set by stability rather than by accuracy.</p>
+</li>
+</ul>
+<h2 id="the_experiment"><a href="#the_experiment" class="header-anchor">The experiment</a></h2>
+<ul>
+<li><p><strong>Equation and discretization:</strong> the vorticity equation in spectral form, with \(N = 128\), dealiasing with <code>Nsub &#61; 84</code> &#40;\(k_{\max} = 41\)&#41;, and viscosity \(\nu = 4 \times 10^{-3}\).</p>
+</li>
+<li><p><strong>Forcing:</strong> steady, on all 20 modes with \(2 \leq |\mathbf{k}| \leq 4\), with equal amplitudes and random phases, scaled so that the curl of the forcing has root-mean-square value 1.</p>
+</li>
+<li><p><strong>Initial condition and warm-up:</strong> the field \(\omega = (1/\nu)A^{-1}g\) in vorticity form, i.e. the solution of the Stokes problem, which is not a steady state of the full equation for this forcing, integrated with <code>Tsit5&#40;&#41;</code> &#40;default tolerances&#41; up to \(t = 3000\).</p>
+</li>
+<li><p><strong>Runs:</strong> each method starts from the state at \(t_0 = 1200\), including a restart of <code>Tsit5&#40;&#41;</code>, and runs for 1000 time units.</p>
+</li>
+<li><p><strong>Diagnostics,</strong> sampled every 0.5 time units &#40;spatial means&#41;: the energy \(E = \tfrac12\langle|\mathbf{u}|^2\rangle\), the enstrophy \(Z = \tfrac12\langle|\nabla\mathbf{u}|^2\rangle = \tfrac12\langle\omega^2\rangle\), the palinstrophy \(P = \tfrac12\langle|\Delta\mathbf{u}|^2\rangle = \tfrac12\langle|\nabla\omega|^2\rangle\), the shell-averaged energy spectrum, and</p>
+</li>
+</ul>
+\[
+\kappa_\sigma^2 = \frac{\langle\|\Delta\mathbf{u}\|_{L^2}^2\rangle}{\langle\|\nabla\mathbf{u}\|_{L^2}^2\rangle} = \frac{\langle P\rangle}{\langle Z\rangle},
+\]
+<p>a Taylor-like wavenumber &#40;squared&#41; for the dissipation of enstrophy.</p>
+<ul>
+<li><p><strong>Confidence intervals:</strong> 95&#37; intervals from 10 batch means of 100 time units each, since the large-scale fluctuations are correlated over long times.</p>
+</li>
+<li><p><strong>Step size:</strong> for the fixed-step methods, \(\Delta t = \sigma/(k_{\max}U_*)\), with \(U_* = 20\), slightly above the largest \(|u|_{\max} + |v|_{\max}\) seen during the warm-up. The <em>typical</em> and <em>maximum</em> CFL numbers, \(\Delta t\, k_{\max}(|u|_{\max} + |v|_{\max})\), were measured during each run.</p>
+</li>
+<li><p><strong>Methods:</strong> <code>Tsit5&#40;&#41;</code> &#40;adaptive, <code>reltol</code> from \(10^{-2}\) to \(10^{-4}\), <code>abstol &#61; 1e-3 * reltol</code>&#41;, <code>RK4&#40;&#41;</code>, <code>ETDRK4&#40;&#41;</code>, <code>SSPRK33&#40;&#41;</code>, and CNAB2 &#40;Crank-Nicolson for \(\nu\Delta\), second-order Adams-Bashforth for the rest&#41;.</p>
+</li>
+</ul>
+<h3 id="the_warm-up"><a href="#the_warm-up" class="header-anchor">The warm-up</a></h3>
+<p>Starting from \((1/\nu)A^{-1}g\), which has a lot of energy, the flow takes about 1000 time units, several times the viscous time scale \(1/(2\nu) = 125\) of the largest scales, to reach a statistically steady regime. In that regime, most of the energy &#40;85&#37; to 97&#37;&#41; is in the \(|\mathbf{k}| = 1\) modes, a condensate fed by the inverse energy cascade, with intermittent bursts in which the condensate loses part of its energy to the smaller scales.</p>
+<p><img src="/2dnsepervortjl/assets/images/turbulence/warmup.png" alt="Warm-up" /></p>
+<p>This regime is, seemingly, weakly turbulent: \(\kappa_\sigma \approx 2.5\) lies inside the forcing band, so there is no range of scales between forcing and dissipation, and the spectrum is steep, with no enstrophy-cascade range. The flow is nonetheless irregular and chaotic, i.e. sensitive to small perturbations: runs of different methods started from the same state, whose energies first differ by less than \(10^{-6}\), differ by 1&#37; after about 70 to 110 time units and by 10&#37; after about 90 to 140 time units. Small differences thus grow at a rate of roughly 0.2 to 0.3 per time unit, a rough estimate of the leading Lyapunov exponent. The spectrum is very well resolved, decaying by about eight orders of magnitude up to \(k_{\max}\).</p>
+<h2 id="results"><a href="#results" class="header-anchor">Results</a></h2>
+<table><tr><th align="left">Method</th><th align="right">Parameter</th><th align="right">\(\Delta t\)</th><th align="right">Typical CFL</th><th align="right">Max CFL</th><th align="center">Stable</th><th align="right">\(\langle E\rangle\)</th><th align="right">\(\langle Z\rangle\)</th><th align="right">\(\langle P\rangle\)</th><th align="right">\(\kappa_\sigma^2\)</th><th align="right">Nonlinear evaluations per time unit</th></tr><tr><td align="left">Tsit5</td><td align="right">reltol &#61; 0.01</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="center">yes</td><td align="right">3.53 ± 0.36</td><td align="right">5.41 ± 1.07</td><td align="right">34.3 ± 6.5</td><td align="right">6.39 ± 0.48</td><td align="right">537</td></tr><tr><td align="left">Tsit5</td><td align="right">reltol &#61; 0.001</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="center">yes</td><td align="right">5.52 ± 1.28</td><td align="right">9.66 ± 3.30</td><td align="right">54.6 ± 19.0</td><td align="right">5.71 ± 0.40</td><td align="right">748</td></tr><tr><td align="left">Tsit5</td><td align="right">reltol &#61; 0.0001</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="center">yes</td><td align="right">3.44 ± 0.22</td><td align="right">5.01 ± 0.57</td><td align="right">32.5 ± 3.4</td><td align="right">6.50 ± 0.28</td><td align="right">534</td></tr><tr><td align="left">RK4</td><td align="right">σ &#61; 0.5</td><td align="right">0.00061</td><td align="right">0.20</td><td align="right">0.42</td><td align="center">yes</td><td align="right">3.93 ± 0.57</td><td align="right">6.17 ± 1.37</td><td align="right">39.2 ± 8.1</td><td align="right">6.41 ± 0.42</td><td align="right">6560</td></tr><tr><td align="left">RK4</td><td align="right">σ &#61; 1</td><td align="right">0.00122</td><td align="right">0.38</td><td align="right">0.80</td><td align="center">yes</td><td align="right">3.68 ± 0.45</td><td align="right">5.53 ± 1.18</td><td align="right">36.0 ± 7.2</td><td align="right">6.54 ± 0.48</td><td align="right">3280</td></tr><tr><td align="left">RK4</td><td align="right">σ &#61; 2</td><td align="right">0.00244</td><td align="right">0.70</td><td align="right">1.28</td><td align="center">yes</td><td align="right">3.32 ± 0.19</td><td align="right">4.64 ± 0.47</td><td align="right">31.7 ± 2.4</td><td align="right">6.85 ± 0.34</td><td align="right">1640</td></tr><tr><td align="left">RK4</td><td align="right">σ &#61; 3</td><td align="right">0.00365</td><td align="right">1.13</td><td align="right">2.40</td><td align="center">yes</td><td align="right">3.89 ± 0.94</td><td align="right">6.35 ± 2.34</td><td align="right">41.4 ± 13.2</td><td align="right">6.67 ± 0.46</td><td align="right">1096</td></tr><tr><td align="left">RK4</td><td align="right">σ &#61; 4</td><td align="right">0.00485</td><td align="right">1.50</td><td align="right">3.54</td><td align="center">yes</td><td align="right">3.64 ± 0.53</td><td align="right">5.61 ± 1.23</td><td align="right">35.9 ± 6.9</td><td align="right">6.48 ± 0.51</td><td align="right">824</td></tr><tr><td align="left">RK4</td><td align="right">σ &#61; 6</td><td align="right">0.00725</td><td align="right">2.36</td><td align="right">5.24</td><td align="center">blew up at t &#61; 1409</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">552</td></tr><tr><td align="left">RK4</td><td align="right">σ &#61; 8</td><td align="right">0.00962</td><td align="right">2.68</td><td align="right">4.74</td><td align="center">blew up at t &#61; 1363</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">416</td></tr><tr><td align="left">ETDRK4</td><td align="right">σ &#61; 0.5</td><td align="right">0.00061</td><td align="right">0.22</td><td align="right">0.44</td><td align="center">yes</td><td align="right">4.33 ± 0.96</td><td align="right">6.92 ± 2.17</td><td align="right">42.8 ± 11.2</td><td align="right">6.37 ± 0.61</td><td align="right">6560</td></tr><tr><td align="left">ETDRK4</td><td align="right">σ &#61; 1</td><td align="right">0.00122</td><td align="right">0.38</td><td align="right">1.01</td><td align="center">yes</td><td align="right">3.86 ± 0.83</td><td align="right">6.14 ± 2.60</td><td align="right">38.6 ± 15.7</td><td align="right">6.38 ± 0.57</td><td align="right">3280</td></tr><tr><td align="left">ETDRK4</td><td align="right">σ &#61; 2</td><td align="right">0.00244</td><td align="right">0.75</td><td align="right">1.63</td><td align="center">yes</td><td align="right">3.79 ± 0.63</td><td align="right">5.78 ± 1.47</td><td align="right">36.4 ± 9.5</td><td align="right">6.35 ± 0.55</td><td align="right">1640</td></tr><tr><td align="left">ETDRK4</td><td align="right">σ &#61; 3</td><td align="right">0.00365</td><td align="right">1.21</td><td align="right">3.03</td><td align="center">yes</td><td align="right">4.44 ± 1.14</td><td align="right">7.45 ± 2.72</td><td align="right">44.2 ± 14.1</td><td align="right">6.19 ± 0.66</td><td align="right">1096</td></tr><tr><td align="left">ETDRK4</td><td align="right">σ &#61; 4</td><td align="right">0.00485</td><td align="right">1.47</td><td align="right">4.12</td><td align="center">yes</td><td align="right">3.81 ± 1.25</td><td align="right">6.61 ± 3.42</td><td align="right">42.7 ± 19.1</td><td align="right">6.71 ± 0.43</td><td align="right">824</td></tr><tr><td align="left">ETDRK4</td><td align="right">σ &#61; 6</td><td align="right">0.00725</td><td align="right">2.61</td><td align="right">5.15</td><td align="center">blew up at t &#61; 1683</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">552</td></tr><tr><td align="left">ETDRK4</td><td align="right">σ &#61; 8</td><td align="right">0.00962</td><td align="right">2.74</td><td align="right">5.22</td><td align="center">blew up at t &#61; 1364</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">416</td></tr><tr><td align="left">SSPRK33</td><td align="right">σ &#61; 0.5</td><td align="right">0.00061</td><td align="right">0.22</td><td align="right">0.40</td><td align="center">yes</td><td align="right">4.18 ± 0.49</td><td align="right">6.70 ± 1.35</td><td align="right">40.5 ± 7.3</td><td align="right">6.12 ± 0.53</td><td align="right">4920</td></tr><tr><td align="left">SSPRK33</td><td align="right">σ &#61; 1</td><td align="right">0.00122</td><td align="right">0.37</td><td align="right">0.91</td><td align="center">yes</td><td align="right">3.99 ± 0.74</td><td align="right">6.22 ± 1.79</td><td align="right">38.7 ± 9.1</td><td align="right">6.40 ± 0.53</td><td align="right">2460</td></tr><tr><td align="left">SSPRK33</td><td align="right">σ &#61; 2</td><td align="right">0.00244</td><td align="right">1.07</td><td align="right">2.07</td><td align="center">yes</td><td align="right">5.74 ± 1.42</td><td align="right">9.51 ± 3.07</td><td align="right">52.0 ± 15.5</td><td align="right">5.60 ± 0.54</td><td align="right">1230</td></tr><tr><td align="left">SSPRK33</td><td align="right">σ &#61; 3</td><td align="right">0.00365</td><td align="right">1.05</td><td align="right">2.16</td><td align="center">yes</td><td align="right">3.43 ± 0.47</td><td align="right">5.00 ± 0.98</td><td align="right">32.4 ± 4.7</td><td align="right">6.58 ± 0.43</td><td align="right">822</td></tr><tr><td align="left">SSPRK33</td><td align="right">σ &#61; 4</td><td align="right">0.00485</td><td align="right">1.38</td><td align="right">2.70</td><td align="center">yes</td><td align="right">3.06 ± 0.16</td><td align="right">4.47 ± 0.36</td><td align="right">30.7 ± 2.8</td><td align="right">6.89 ± 0.40</td><td align="right">618</td></tr><tr><td align="left">SSPRK33</td><td align="right">σ &#61; 6</td><td align="right">0.00725</td><td align="right">2.01</td><td align="right">3.55</td><td align="center">blew up at t &#61; 1302</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">414</td></tr><tr><td align="left">CNAB2</td><td align="right">σ &#61; 0.25</td><td align="right">0.00031</td><td align="right">0.09</td><td align="right">0.21</td><td align="center">yes</td><td align="right">3.77 ± 0.49</td><td align="right">5.48 ± 1.04</td><td align="right">34.7 ± 7.2</td><td align="right">6.34 ± 0.46</td><td align="right">3280</td></tr><tr><td align="left">CNAB2</td><td align="right">σ &#61; 0.5</td><td align="right">0.00061</td><td align="right">0.19</td><td align="right">0.49</td><td align="center">yes</td><td align="right">3.97 ± 1.15</td><td align="right">6.79 ± 3.01</td><td align="right">43.6 ± 17.1</td><td align="right">6.62 ± 0.49</td><td align="right">1640</td></tr><tr><td align="left">CNAB2</td><td align="right">σ &#61; 0.75</td><td align="right">0.00091</td><td align="right">0.30</td><td align="right">0.64</td><td align="center">yes</td><td align="right">4.00 ± 0.65</td><td align="right">6.53 ± 1.97</td><td align="right">40.6 ± 13.2</td><td align="right">6.22 ± 0.55</td><td align="right">1094</td></tr><tr><td align="left">CNAB2</td><td align="right">σ &#61; 1</td><td align="right">0.00122</td><td align="right">0.35</td><td align="right">0.89</td><td align="center">blew up at t &#61; 1546</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">820</td></tr><tr><td align="left">CNAB2</td><td align="right">σ &#61; 2</td><td align="right">0.00244</td><td align="right">0.68</td><td align="right">1.00</td><td align="center">blew up at t &#61; 1352</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">–</td><td align="right">410</td></tr></table>
+<p>&quot;Stable&quot; means that the run lasted the full 1000 time units; the runs that blew up did so during a burst.</p>
+<h3 id="statistics"><a href="#statistics" class="header-anchor">Statistics</a></h3>
+<p>The intervals of \(\langle E\rangle\), \(\langle Z\rangle\) and \(\langle P\rangle\) are wide, about 5&#37; to 50&#37;, because of the slow, intermittent dynamics of the condensate. The ratio \(\kappa_\sigma^2 = \langle P\rangle/\langle Z\rangle\) is much more robust, with intervals of about 4&#37; to 11&#37;, and most runs give \(\kappa_\sigma^2 \approx 6.2\) to \(6.9\), i.e. \(\kappa_\sigma \approx 2.5\).</p>
+<p>The stable runs agree within their 95&#37; confidence intervals, with two exceptions: <code>Tsit5</code> with <code>reltol &#61; 1e-3</code> and <code>SSPRK33</code> with \(\sigma = 2\), whose trajectories had more bursts, give higher \(\langle E\rangle\), \(\langle Z\rangle\) and \(\langle P\rangle\) and a lower \(\kappa_\sigma^2 \approx 5.6\) to \(5.7\), which does not overlap with the interval of, say, RK4 with \(\sigma = 2\). These deviations are not related to the step size or tolerance, since the neighbouring parameters of the same methods agree with the other runs; they indicate that the confidence intervals from 10 batches underestimate the uncertainty, because the bursts are correlated over times comparable to the batch length.</p>
+<p><img src="/2dnsepervortjl/assets/images/turbulence/kappa_sigma.png" alt="κσ²" /></p>
+<p><img src="/2dnsepervortjl/assets/images/turbulence/energy.png" alt="Energy" /></p>
+<p>The time-averaged spectra coincide at all but the largest scales, \(k \leq 4\), where the fluctuations of the condensate dominate:</p>
+<p><img src="/2dnsepervortjl/assets/images/turbulence/spectra.png" alt="Spectra" /></p>
+<p>No systematic bias due to the time discretization can be detected: over a factor of 8 in the time step for RK4 and ETDRK4, and over the whole range of tolerances for <code>Tsit5</code>, the differences show no trend with the step size and are of the size of the sampling fluctuations. Detecting a smaller bias would require much longer runs. The runs all start from the same state, so their first part is correlated; they then diverge, since the flow is chaotic, within about 100 time units &#40;see the warm-up section&#41;, a tenth of the length of each run.</p>
+<h3 id="stability_limits"><a href="#stability_limits" class="header-anchor">Stability limits</a></h3>
+<table><tr><th align="left">Method</th><th align="right">Largest σ stable for 1000 time units</th><th align="right">Blew up at</th><th align="right">Max CFL observed in the largest stable run</th></tr><tr><td align="left">RK4</td><td align="right">4</td><td align="right">σ &#61; 6</td><td align="right">3.5</td></tr><tr><td align="left">ETDRK4</td><td align="right">4</td><td align="right">σ &#61; 6</td><td align="right">4.1</td></tr><tr><td align="left">SSPRK33</td><td align="right">4</td><td align="right">σ &#61; 6</td><td align="right">2.7</td></tr><tr><td align="left">CNAB2</td><td align="right">0.75</td><td align="right">σ &#61; 1</td><td align="right">0.64</td></tr></table>
+<ul>
+<li><p>RK4 and ETDRK4 have the same stability limit: the viscous term plays no role here.</p>
+</li>
+<li><p>SSPRK33 is stable up to the same step as RK4 in this test, even though its theoretical limit along the imaginary axis is smaller; but its largest stable run happened to have weaker bursts &#40;maximum CFL of 2.7 rather than 3.5&#41;, so its margin is smaller.</p>
+</li>
+<li><p>CNAB2 needs a step about five to six times smaller: the Adams-Bashforth part has no stability along the imaginary axis, and only the viscous damping stabilizes it.</p>
+</li>
+<li><p>Being stable for 1000 time units does not guarantee stability over longer runs, since a stronger burst may come later.</p>
+</li>
+</ul>
+<h3 id="cost"><a href="#cost" class="header-anchor">Cost</a></h3>
+<p>The cost of one step, measured on its own &#40;single-threaded, with no other process competing&#41;, and the resulting cost per time unit:</p>
+<table><tr><th align="left">Method</th><th align="right">Cost per step &#40;ms&#41;</th><th align="right">Steps per time unit</th><th align="right">Cost per time unit &#40;s&#41;</th></tr><tr><td align="left">one evaluation of the nonlinear term</td><td align="right">0.144</td><td align="right"></td><td align="right"></td></tr><tr><td align="left">Tsit5, reltol &#61; 0.01 or 0.0001</td><td align="right">1.50</td><td align="right">89</td><td align="right">0.13</td></tr><tr><td align="left">Tsit5, reltol &#61; 0.001</td><td align="right">1.50</td><td align="right">125</td><td align="right">0.19</td></tr><tr><td align="left">SSPRK33, σ &#61; 4</td><td align="right">0.58</td><td align="right">206</td><td align="right">0.12</td></tr><tr><td align="left">SSPRK33, σ &#61; 3</td><td align="right">0.58</td><td align="right">274</td><td align="right">0.16</td></tr><tr><td align="left">RK4, σ &#61; 4</td><td align="right">0.82</td><td align="right">206</td><td align="right">0.17</td></tr><tr><td align="left">RK4, σ &#61; 3</td><td align="right">0.82</td><td align="right">274</td><td align="right">0.23</td></tr><tr><td align="left">ETDRK4, σ &#61; 4</td><td align="right">1.13</td><td align="right">206</td><td align="right">0.23</td></tr><tr><td align="left">ETDRK4, σ &#61; 3</td><td align="right">1.13</td><td align="right">274</td><td align="right">0.31</td></tr><tr><td align="left">CNAB2 &#40;hand-written&#41;, σ &#61; 0.75</td><td align="right">0.22</td><td align="right">1094</td><td align="right">0.24</td></tr><tr><td align="left">CNAB2 &#40;hand-written&#41;, σ &#61; 0.5</td><td align="right">0.22</td><td align="right">1640</td><td align="right">0.36</td></tr></table>
+<ul>
+<li><p><code>Tsit5</code> takes the same number of steps at <code>reltol &#61; 1e-2</code> as at <code>1e-4</code>: its step is limited by stability, not by the tolerance, and it adapts to the instantaneous velocity, with typical CFL numbers of 3 to 4, while a fixed step must be chosen for the bursts. &#40;The run with <code>reltol &#61; 1e-3</code> took more steps because its trajectory had stronger bursts.&#41;</p>
+</li>
+<li><p>In OrdinaryDiffEq, one ETDRK4 step costs about 40&#37; more than one RK4 step, with no gain in stability here.</p>
+</li>
+<li><p>CNAB2 is the cheapest per step, with a single evaluation of the nonlinear term, but needs so many more steps that it ends up 1.5 to 3 times more expensive than the explicit methods.</p>
+</li>
+</ul>
+<h2 id="recommendation"><a href="#recommendation" class="header-anchor">Recommendation</a></h2>
+<p>For weakly turbulent, advection-dominated flows like this one, and, we expect, for more turbulent flows as well:</p>
+<ul>
+<li><p><strong>An adaptive explicit method, such as <code>Tsit5&#40;&#41;</code> with a loose tolerance &#40;e.g. <code>reltol &#61; 1e-2</code>&#41;, is the simplest choice and among the cheapest.</strong> It needs no choice of time step, follows the bursts automatically, and its statistics are consistent with those of the other methods, within the sampling fluctuations.</p>
+</li>
+<li><p><strong>A fixed-step explicit Runge-Kutta method &#40;<code>SSPRK33&#40;&#41;</code> or <code>RK4&#40;&#41;</code>&#41; is equally good</strong> if a fixed step is preferred, for instance to sample at regular times. With \(\Delta t = \sigma/(k_{\max}U_*)\), \(U_*\) the largest \(|u|_{\max} + |v|_{\max}\) seen during a long warm-up, \(\sigma \approx 2\) to 3 leaves a margin of about two below the observed blow-up at \(\sigma = 6\).</p>
+</li>
+<li><p><strong>ETDRK4 brings no benefit in this regime</strong> and costs more per step. It is the right choice when the viscous term is stiff: large viscosity, as in the earlier pages, higher resolution relative to the dissipation scale, or hyperviscosity.</p>
+</li>
+<li><p><strong>CNAB2 works, but requires a much smaller step</strong> and ends up more expensive.</p>
+</li>
+<li><p><strong>Implicit methods are not recommended</strong> for this regime.</p>
+</li>
+</ul>
+<h3 id="choosing_the_step_for_etdrk4"><a href="#choosing_the_step_for_etdrk4" class="header-anchor">Choosing the step for ETDRK4</a></h3>
+<p>ETDRK4 in OrdinaryDiffEq uses a fixed step, and it cannot change the step during a run: it caches the exponential coefficients for that step and throws an error if the step changes, even by round-off, so the step cannot be adapted to the CFL number on the fly. The step must therefore be chosen in advance:</p>
+<ol>
+<li><p>Run a long warm-up &#40;with <code>Tsit5&#40;&#41;</code>, for instance&#41; until the statistics settle, and record \(|u|_{\max} + |v|_{\max}\); take \(U_*\) slightly above its maximum, since the bursts set the limit.</p>
+</li>
+<li><p>Take \(\Delta t = \sigma/(k_{\max}U_*)\) with \(\sigma \approx 2\) to 3 &#40;here, stability was lost at \(\sigma = 6\)&#41;.</p>
+</li>
+<li><p>Check the statistics against a run with \(\Delta t/2\), comparing the confidence intervals of \(\langle E\rangle\), \(\langle Z\rangle\), \(\kappa_\sigma^2\) and the spectrum.</p>
+</li>
+<li><p>Monitor the CFL number during the run, e.g. with a callback, to detect an unexpectedly strong burst.</p>
+</li>
+</ol>
+<h2 id="implementation_notes"><a href="#implementation_notes" class="header-anchor">Implementation notes</a></h2>
+<ul>
+<li><p><strong>CNAB2 in OrdinaryDiffEq</strong> must be given <code>linsolve &#61; DiagonalFactorization&#40;&#41;</code> &#40;from LinearSolve&#41; for a <code>SplitODEProblem</code> with a <code>DiagonalOperator</code>: with the default linear solver, it builds and factorizes a dense matrix at every step, about 1000 times slower. Even then, it costs about four times more per step than a hand-written CNAB2, which needs only one evaluation of the nonlinear term per step; the two give the same solution &#40;relative difference \(1.4 \times 10^{-10}\) after 2000 steps&#41;. The CNAB2 runs above use the hand-written version.</p>
+</li>
+<li><p><strong>Fixed-step methods and sampling:</strong> with <code>step&#33;</code>, landing exactly on the sampling times may shorten the last step, which ETDRK4 does not allow; the scripts take a fixed number of steps between samples instead.</p>
+</li>
+</ul>
+<h2 id="caveats"><a href="#caveats" class="header-anchor">Caveats</a></h2>
+<ul>
+<li><p>A single set of parameters &#40;\(N = 128\), \(\nu = 4\times10^{-3}\), one forcing&#41; in a seemingly weakly turbulent, condensate-dominated regime. For more turbulent flows, which require a smaller viscosity resolved with a larger \(N\), the viscous term becomes even less stiff relative to advection, which should strengthen the conclusions above &#40;this was not tested&#41;; with hyperviscosity, on the other hand, the viscous term may become stiff again.</p>
+</li>
+<li><p>The averaging windows of 1000 time units only resolve differences in the statistics larger than the sampling error, about 5&#37; to 50&#37; for \(\langle E\rangle\), \(\langle Z\rangle\) and \(\langle P\rangle\), and about 4&#37; to 11&#37; for \(\kappa_\sigma^2\), and these confidence intervals are probably underestimated, as discussed above.</p>
+</li>
+<li><p>The costs depend on the implementation &#40;OrdinaryDiffEq v7.8.1, FFTW, single-threaded runs at \(N = 128\)&#41;.</p>
+</li>
+</ul>
+<h2 id="reproducing_the_results"><a href="#reproducing_the_results" class="header-anchor">Reproducing the results</a></h2>
+<p>From the folder <code>benchmarks/turbulence/</code> of the repository, <code>bash run_all.sh</code> runs the warm-up, all the methods, the timings and the analysis, writing the tables and figures to <code>figs/</code>. It takes about 1.5 hours on 4 cores.</p>
+
+    <div class="navbar">
+    <p id="nav">
+<span id="nav-prev" style="float: left;">
+<a class="menu-level-1" href="/2dnsepervortjl/pages/literated/stiff_solvers_report">7.4. Stiff solvers, Jacobians and automatic differentiation <kbd>←</kbd></a>
+</span>
+<span id="nav-next" style="float: right;">
+    <a class="menu-level-1" href="/2dnsepervortjl/pages/references"><kbd>→</kbd> 9. References</a>
+</span>
+    </p>
+</div>
+</br></br>
+
+
+
+<div class="page-foot">
+    
+        <div class="license">
+            <a href=LICENSE>MIT License </a>
+            <a href="https://rmsrosa.github.io">(Ricardo M. S. Rosa)</a>
+        </div>
+    
+
+    Last modified: November 19, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+</div><!-- CONTENT ENDS HERE -->
+
+      </div> <!-- .books-content -->
+    </div> <!-- .books-container -->
+
+    
+        <script src="/2dnsepervortjl/libs/katex/katex.min.js"></script>
+        <script src="/2dnsepervortjl/libs/katex/auto-render.min.js"></script>
+        <script>renderMathInElement(document.body)</script>
+    
+
+    
+
+  </body>
+</html>
