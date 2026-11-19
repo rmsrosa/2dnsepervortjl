@@ -1,4 +1,4 @@
-# Shared code for the chaotic-flow experiment: forced 2D NSE in vorticity form, N = 128.
+# Shared code for the weakly turbulent flow experiment: forced 2D NSE in vorticity form, N = 128.
 using FFTW, LinearAlgebra, Random, Printf, Serialization, Statistics
 using OrdinaryDiffEq
 using OrdinaryDiffEqExponentialRK: ETDRK4

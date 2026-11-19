@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Reproduces the chaotic-flow comparison of time-stepping methods reported in the page
-# "Time stepping for chaotic flows". Run from this folder:  bash run_all.sh
+# Reproduces the weakly turbulent flow comparison of time-stepping methods reported in the
+# page "Time stepping for weakly turbulent flows". Run from this folder:  bash run_all.sh
 # Takes several hours of CPU time (about 1.5 h of wall time on 4 cores). Each run is
 # single-threaded; independent runs are executed 4 at a time.
 set -euo pipefail

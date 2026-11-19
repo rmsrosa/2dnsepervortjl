@@ -1,8 +1,8 @@
-@def title = "Time stepping for chaotic flows"
+@def title = "Time stepping for weakly turbulent flows"
 
 # {{ get_title }}
 
-The comparisons in [Stiff solvers, Jacobians and automatic differentiation](/pages/literated/stiff_solvers_report) were made at a large viscosity, $\nu = 1$, where the flow converges to a steady state and the time step is limited by the viscous term. Here we look at the opposite regime: a small viscosity and a multi-mode forcing, which sustain a chaotic flow, where advection is the dominant term. We compare explicit, exponential and implicit-explicit (IMEX) methods by the cost of computing the *statistics* of the flow.
+The comparisons in [Stiff solvers, Jacobians and automatic differentiation](/pages/literated/stiff_solvers_report) were made at a large viscosity, $\nu = 1$, where the flow converges to a steady state and the time step is limited by the viscous term. Here we look at the opposite regime: a small viscosity and a multi-mode forcing, which sustain a seemingly weakly turbulent, chaotic flow, where advection is the dominant term. We compare explicit, exponential and implicit-explicit (IMEX) methods by the cost of computing the *statistics* of the flow.
 
 The results come from a single experiment, run once on a 4-core Linux machine, and are reported as static tables and figures; nothing is executed when this page is built. The scripts that reproduce them are in the folder [`benchmarks/turbulence/`](https://github.com/rmsrosa/2dnsepervortjl/tree/main/benchmarks/turbulence) of the repository.
 
@@ -59,7 +59,7 @@ Starting from $(1/\nu)A^{-1}g$, which has a lot of energy, the flow takes about 
 
 ![Warm-up](/assets/images/turbulence/warmup.png)
 
-This regime is chaotic but not turbulent: $\kappa_\sigma \approx 2.5$ lies inside the forcing band, so there is no range of scales between forcing and dissipation, and the spectrum is steep, with no enstrophy-cascade range. The flow is nonetheless irregular and sensitive to small perturbations: runs of different methods started from the same state, whose energies first differ by less than $10^{-6}$, differ by 1% after about 70 to 110 time units and by 10% after about 90 to 140 time units. Small differences thus grow at a rate of roughly 0.2 to 0.3 per time unit, a rough estimate of the leading Lyapunov exponent. The spectrum is very well resolved, decaying by about eight orders of magnitude up to $k_{\max}$.
+This regime is, seemingly, weakly turbulent: $\kappa_\sigma \approx 2.5$ lies inside the forcing band, so there is no range of scales between forcing and dissipation, and the spectrum is steep, with no enstrophy-cascade range. The flow is nonetheless irregular and chaotic, i.e. sensitive to small perturbations: runs of different methods started from the same state, whose energies first differ by less than $10^{-6}$, differ by 1% after about 70 to 110 time units and by 10% after about 90 to 140 time units. Small differences thus grow at a rate of roughly 0.2 to 0.3 per time unit, a rough estimate of the leading Lyapunov exponent. The spectrum is very well resolved, decaying by about eight orders of magnitude up to $k_{\max}$.
 
 ## Results
 
@@ -150,7 +150,7 @@ The cost of one step, measured on its own (single-threaded, with no other proces
 
 ## Recommendation
 
-For chaotic, advection-dominated flows like this one, and, we expect, for turbulent flows as well:
+For weakly turbulent, advection-dominated flows like this one, and, we expect, for more turbulent flows as well:
 
 * **An adaptive explicit method, such as `Tsit5()` with a loose tolerance (e.g. `reltol = 1e-2`), is the simplest choice and among the cheapest.** It needs no choice of time step, follows the bursts automatically, and its statistics are consistent with those of the other methods, within the sampling fluctuations.
 * **A fixed-step explicit Runge-Kutta method (`SSPRK33()` or `RK4()`) is equally good** if a fixed step is preferred, for instance to sample at regular times. With $\Delta t = \sigma/(k_{\max}U_*)$, $U_*$ the largest $|u|_{\max} + |v|_{\max}$ seen during a long warm-up, $\sigma \approx 2$ to 3 leaves a margin of about two below the observed blow-up at $\sigma = 6$.
@@ -174,7 +174,7 @@ ETDRK4 in OrdinaryDiffEq uses a fixed step, and it cannot change the step during
 
 ## Caveats
 
-* A single set of parameters ($N = 128$, $\nu = 4\times10^{-3}$, one forcing) in a chaotic but not turbulent, condensate-dominated regime. For turbulent flows, which require a smaller viscosity resolved with a larger $N$, the viscous term becomes even less stiff relative to advection, which should strengthen the conclusions above (this was not tested); with hyperviscosity, on the other hand, the viscous term may become stiff again.
+* A single set of parameters ($N = 128$, $\nu = 4\times10^{-3}$, one forcing) in a seemingly weakly turbulent, condensate-dominated regime. For more turbulent flows, which require a smaller viscosity resolved with a larger $N$, the viscous term becomes even less stiff relative to advection, which should strengthen the conclusions above (this was not tested); with hyperviscosity, on the other hand, the viscous term may become stiff again.
 * The averaging windows of 1000 time units only resolve differences in the statistics larger than the sampling error, about 5% to 50% for $\langle E\rangle$, $\langle Z\rangle$ and $\langle P\rangle$, and about 4% to 11% for $\kappa_\sigma^2$, and these confidence intervals are probably underestimated, as discussed above.
 * The costs depend on the implementation (OrdinaryDiffEq v7.8.1, FFTW, single-threaded runs at $N = 128$).
 

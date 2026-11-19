@@ -1,4 +1,4 @@
-# Analysis of the chaotic-flow runs: statistics with confidence intervals, CFL numbers, cost,
+# Analysis of the weakly turbulent flow runs: statistics with confidence intervals, CFL numbers, cost,
 # figures. Usage: julia analyze.jl [outdir]
 include("turb_common.jl")
 using Plots
