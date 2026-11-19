@@ -3,7 +3,7 @@
 These scripts are not part of the website, since they take long to run and their timings depend on the machine. They are kept here as a reference, to be run separately.
 
 * `benchmark_fft_plan.jl`: benchmarks of the FFTW planning flags (`ESTIMATE`, `MEASURE`, `PATIENT` and `EXHAUSTIVE`) for several grid sizes, up to $N = 2100$. It takes about half an hour, mostly planning with `PATIENT` and `EXHAUSTIVE` for the larger grids.
-* `turbulence/`: the comparison of time-stepping methods for a turbulent flow reported in the page "Time stepping for turbulent flows" (warm-up, runs of all the methods, timings and analysis). Run `bash run_all.sh` from that folder; it takes about 1.5 hours on 4 cores.
+* `turbulence/`: the comparison of time-stepping methods for a chaotic flow reported in the page "Time stepping for chaotic flows" (warm-up, runs of all the methods, timings and analysis). Run `bash run_all.sh` from that folder; it takes about 1.5 hours on 4 cores.
 * `benchmark_stiff_solvers.jl`: the benchmark reported in the page "Stiff solvers, Jacobians and automatic differentiation", comparing explicit, implicit (with the analytic Jacobian-vector product) and exponential (ETDRK4) solvers. It takes about a minute.
 
 They are written in the [Literate.jl](https://github.com/fredrikekre/Literate.jl) format, like the pages of the site, and use the environment of the repository. They can be run as plain scripts (in which case the plots are not shown), from the root of the repository:

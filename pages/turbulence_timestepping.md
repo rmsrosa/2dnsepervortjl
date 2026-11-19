@@ -1,4 +1,4 @@
-@def title = "Time stepping for turbulent flows"
+@def title = "Time stepping for chaotic flows"
 
 # {{ get_title }}
 
@@ -59,7 +59,7 @@ Starting from $(1/\nu)A^{-1}g$, which has a lot of energy, the flow takes about 
 
 ![Warm-up](/assets/images/turbulence/warmup.png)
 
-This is a weakly turbulent regime: $\kappa_\sigma \approx 2.5$ lies inside the forcing band and the spectrum is steep, with no enstrophy-cascade range. The spectrum is very well resolved, decaying by about eight orders of magnitude up to $k_{\max}$.
+This regime is chaotic but not turbulent: $\kappa_\sigma \approx 2.5$ lies inside the forcing band, so there is no range of scales between forcing and dissipation, and the spectrum is steep, with no enstrophy-cascade range. The flow is nonetheless irregular and sensitive to small perturbations: runs of different methods started from the same state, whose energies first differ by less than $10^{-6}$, differ by 1% after about 70 to 110 time units and by 10% after about 90 to 140 time units. Small differences thus grow at a rate of roughly 0.2 to 0.3 per time unit, a rough estimate of the leading Lyapunov exponent. The spectrum is very well resolved, decaying by about eight orders of magnitude up to $k_{\max}$.
 
 ## Results
 
@@ -110,7 +110,7 @@ The time-averaged spectra coincide at all but the largest scales, $k \leq 4$, wh
 
 ![Spectra](/assets/images/turbulence/spectra.png)
 
-No systematic bias due to the time discretization can be detected: over a factor of 8 in the time step for RK4 and ETDRK4, and over the whole range of tolerances for `Tsit5`, the differences show no trend with the step size and are of the size of the sampling fluctuations. Detecting a smaller bias would require much longer runs. The runs all start from the same state, so their first part is correlated; they then diverge, since the flow is chaotic (we did not measure how fast).
+No systematic bias due to the time discretization can be detected: over a factor of 8 in the time step for RK4 and ETDRK4, and over the whole range of tolerances for `Tsit5`, the differences show no trend with the step size and are of the size of the sampling fluctuations. Detecting a smaller bias would require much longer runs. The runs all start from the same state, so their first part is correlated; they then diverge, since the flow is chaotic, within about 100 time units (see the warm-up section), a tenth of the length of each run.
 
 ### Stability limits
 
@@ -150,7 +150,7 @@ The cost of one step, measured on its own (single-threaded, with no other proces
 
 ## Recommendation
 
-For turbulent, advection-dominated flows like this one:
+For chaotic, advection-dominated flows like this one, and, we expect, for turbulent flows as well:
 
 * **An adaptive explicit method, such as `Tsit5()` with a loose tolerance (e.g. `reltol = 1e-2`), is the simplest choice and among the cheapest.** It needs no choice of time step, follows the bursts automatically, and its statistics are consistent with those of the other methods, within the sampling fluctuations.
 * **A fixed-step explicit Runge-Kutta method (`SSPRK33()` or `RK4()`) is equally good** if a fixed step is preferred, for instance to sample at regular times. With $\Delta t = \sigma/(k_{\max}U_*)$, $U_*$ the largest $|u|_{\max} + |v|_{\max}$ seen during a long warm-up, $\sigma \approx 2$ to 3 leaves a margin of about two below the observed blow-up at $\sigma = 6$.
@@ -174,7 +174,7 @@ ETDRK4 in OrdinaryDiffEq uses a fixed step, and it cannot change the step during
 
 ## Caveats
 
-* A single set of parameters ($N = 128$, $\nu = 4\times10^{-3}$, one forcing) in a weakly turbulent, condensate-dominated regime. For more turbulent flows, resolved with a larger $N$, the viscous term becomes even less stiff relative to advection, which strengthens the conclusions above; with hyperviscosity, on the other hand, the viscous term may become stiff again.
+* A single set of parameters ($N = 128$, $\nu = 4\times10^{-3}$, one forcing) in a chaotic but not turbulent, condensate-dominated regime. For turbulent flows, which require a smaller viscosity resolved with a larger $N$, the viscous term becomes even less stiff relative to advection, which should strengthen the conclusions above (this was not tested); with hyperviscosity, on the other hand, the viscous term may become stiff again.
 * The averaging windows of 1000 time units only resolve differences in the statistics larger than the sampling error, about 5% to 50% for $\langle E\rangle$, $\langle Z\rangle$ and $\langle P\rangle$, and about 4% to 11% for $\kappa_\sigma^2$, and these confidence intervals are probably underestimated, as discussed above.
 * The costs depend on the implementation (OrdinaryDiffEq v7.8.1, FFTW, single-threaded runs at $N = 128$).
 
