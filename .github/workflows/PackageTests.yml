@@ -1,0 +1,31 @@
+name: NSEPeriodic2D tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "NSEPeriodic2D/**"
+      - ".github/workflows/PackageTests.yml"
+  pull_request:
+    paths:
+      - "NSEPeriodic2D/**"
+      - ".github/workflows/PackageTests.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1.13"
+
+      - uses: julia-actions/cache@v2
+
+      - name: Run the tests
+        working-directory: NSEPeriodic2D
+        run: julia --project=. -e 'using Pkg; Pkg.instantiate(); Pkg.test()'

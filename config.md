@@ -3,6 +3,7 @@
 ## config vars
 +++
 prepath = "2dnsepervortjl"
+ignore = ["NSEPeriodic2D/", "benchmarks/"]
 content_tag = ""
 +++
 

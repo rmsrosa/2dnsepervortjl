@@ -7,6 +7,10 @@
 
 Simulation of homogeneous, incompressible Newtonian viscous flows in a fully-periodic two-dimensional domain under a given steady volume force, via [FFTW.jl](https://github.com/JuliaMath/FFTW.jl) and [DifferentialEquations.jl](https://github.com/SciML/DifferentialEquations.jl).
 
+## The NSEPeriodic2D package
+
+The folder [`NSEPeriodic2D/`](NSEPeriodic2D/) holds a Julia package (not registered) with the methods developed in the notes, in reusable form: you give the periods of the domain, the resolution, the viscosity, the forcing and the initial condition, and choose a solver of DifferentialEquations.jl. See its [README](NSEPeriodic2D/README.md). The notes themselves do not use the package.
+
 ## Building the site
 
 The site is built with [Franklin.jl](https://github.com/tlienart/Franklin.jl), and the pages in `src/literate/` are executed with [Literate.jl](https://github.com/fredrikekre/Literate.jl) during the build. It requires Julia 1.13 or later.
