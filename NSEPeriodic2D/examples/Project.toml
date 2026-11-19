@@ -1,0 +1,10 @@
+[deps]
+LinearSolve = "7ed4a6bd-45f5-4d41-b270-4a48e9bafcae"
+NSEPeriodic2D = "964c2fa4-4d58-4920-9818-d850cca8d140"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+OrdinaryDiffEqBDF = "6ad6398a-0878-4a85-9266-38940aa047c8"
+OrdinaryDiffEqExponentialRK = "e0540318-69ee-4070-8777-9e2de6de23de"
+OrdinaryDiffEqSSPRK = "669c94d9-1f4b-4b64-b377-1aa079aa2388"
+
+[sources]
+NSEPeriodic2D = {path = ".."}
