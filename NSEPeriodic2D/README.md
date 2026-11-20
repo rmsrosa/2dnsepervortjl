@@ -14,6 +14,8 @@ on the periodic domain $[0, L_x) \times [0, L_y)$, with a steady forcing whose c
 
 The package is not registered. The solvers are not a dependency: load the OrdinaryDiffEq packages you need.
 
+The section "The NSEPeriodic2D package" of the [website](https://rmsrosa.github.io/2dnsepervortjl/) explains and uses the package, with plots.
+
 ## Installation
 
 From Julia, either from GitHub:
@@ -70,9 +72,11 @@ Following the conclusions of the notes ("Stiff solvers, Jacobians and automatic 
 
 | Regime | Formulation | Methods |
 | :--- | :--- | :--- |
-| Advection-dominated (small viscosity, turbulent or chaotic flows) | `NSEProblem(model, ω0, tspan)` (`kind = :full`) | `Tsit5()` with a loose tolerance, which follows the bursts automatically; or a fixed step with `SSPRK33()` or `RK4()` (`dt`, `adaptive = false`) |
+| Advection-dominated (small viscosity, turbulent or chaotic flows) | `NSEProblem(model, ω0, tspan)` (`kind = :full`) | `Tsit5()`, which follows the bursts automatically; or a fixed step with `SSPRK33()` or `RK4()` (`dt`, `adaptive = false`) |
 | Viscous term stiff (large viscosity, high resolution, steady states) | `kind = :split` | `ETDRK4()` with a fixed `dt`; IMEX methods such as `CNAB2(linsolve = DiagonalFactorization())` |
 | Viscous, converging to steady states, large steps | `kind = :implicit` | `QNDF(linsolve = KrylovJL_GMRES(), concrete_jac = false)` and other implicit methods, matrix-free with the analytic Jacobian-vector product |
+
+With `Tsit5()`, a loose tolerance (`reltol = 1e-2`) is cheap and fine for a warm-up, but, in a test with the forced flow of the docs, it biased the time-averaged energy by about 5%, while `reltol = 1e-4` agreed with fixed-step `SSPRK33()` runs; check the statistics against a tighter tolerance.
 
 For a fixed step, `suggest_dt(model, ω̂; σ, umax, vmax)` gives `dt = σ / (κx_max umax + κy_max vmax)`. In the notes, RK4, ETDRK4 and SSPRK33 were stable up to $\sigma \approx 4$ and blew up at $\sigma = 6$, with the velocity maxima over a long run (bursts included), and CNAB2 needs a step about five times smaller. With `simulate`, `dt` must divide `save_every`. ETDRK4 in OrdinaryDiffEq cannot change its step during a run.
 
