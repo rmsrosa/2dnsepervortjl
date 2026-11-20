@@ -1,17 +1,24 @@
 """
-    NSEModel(grid; ν, forcing = nothing, fftw_flags = FFTW.MEASURE, fftw_threads = 1)
+    NSEModel(grid; ν, forcing = nothing, random_forcing = nothing, noise = nothing,
+        fftw_flags = FFTW.MEASURE, fftw_threads = 1)
 
-The vorticity equation `∂ₜω = νΔω + g - (∂ₓ² - ∂ᵧ²)(uv) - ∂ₓ∂ᵧ(v² - u²)` (Basdevant's form of
-`-u ⋅ ∇ω`) on `grid`, with viscosity `ν` and curl of the forcing `g` given by `forcing` in any
-form accepted by [`forcing_hat`](@ref) (a function `g(x, y)`, a physical or a spectral array,
-or `nothing`). The forcing is steady.
+The vorticity equation
+
+    dω = (νΔω + g + curl Nₜ - (∂ₓ² - ∂ᵧ²)(uv) - ∂ₓ∂ᵧ(v² - u²)) dt + σ curl(Φ dWₜ)
+
+(Basdevant's form of `-u ⋅ ∇ω`) on `grid`, with viscosity `ν` and
+* the curl `g` of a steady forcing, given by `forcing` in any form accepted by
+  [`forcing_hat`](@ref) (a function `g(x, y)`, a physical or a spectral array, or `nothing`);
+* a random forcing `Nₜ`, a [`RandomForcing`](@ref), or `nothing`;
+* an additive stochastic forcing `σ Φ dWₜ`, an [`AdditiveNoise`](@ref), or `nothing`. With a
+  noise, the problems must be built with `kind = :sde`.
 
 The model holds the spectral operators, the FFTW plans and preallocated work arrays used by
 the right-hand side, so the right-hand side does not allocate. Because of the work arrays, a
 model must not be shared by computations running concurrently in different threads; build
 one model per thread or task instead.
 """
-struct NSEModel{P, IP}
+struct NSEModel{P, IP, RF, NZ}
     grid::Grid
     ν::Float64
     g_hat::Matrix{ComplexF64}
@@ -20,6 +27,9 @@ struct NSEModel{P, IP}
     DxxDyy::Matrix{ComplexF64}       # symbol of ∂ₓ² - ∂ᵧ²
     Dxy::Matrix{ComplexF64}          # symbol of ∂ₓ∂ᵧ
     L::Vector{ComplexF64}            # diagonal of the linear operator νΔ, vectorized
+    Lr::Vector{Float64}              # the same, for the real reinterpretation of the state
+    random_forcing::RF
+    noise::NZ
     plan::P
     iplan::IP
     # work arrays
@@ -34,7 +44,8 @@ struct NSEModel{P, IP}
     b_hat::Matrix{ComplexF64}
 end
 
-function NSEModel(grid::Grid; ν::Real, forcing = nothing, fftw_flags = FFTW.MEASURE, fftw_threads::Integer = 1)
+function NSEModel(grid::Grid; ν::Real, forcing = nothing, random_forcing::Union{Nothing, RandomForcing} = nothing,
+        noise::Union{Nothing, AdditiveNoise} = nothing, fftw_flags = FFTW.MEASURE, fftw_threads::Integer = 1)
     ν ≥ 0 || throw(ArgumentError("the viscosity must be nonnegative"))
     FFTW.set_num_threads(fftw_threads)
     Dx = [im * a for a in grid.κx, _ in grid.κy]
@@ -49,11 +60,16 @@ function NSEModel(grid::Grid; ν::Real, forcing = nothing, fftw_flags = FFTW.MEA
     iplan = plan_irfft(spec(), grid.Nx; flags = fftw_flags)
     g_hat = forcing_hat(grid, forcing)
     return NSEModel(grid, Float64(ν), g_hat, Hu, Hv, Dx .^ 2 .- Dy .^ 2, Dx .* Dy,
-        vec(complex.(-ν .* k2)), plan, iplan,
+        vec(complex.(-ν .* k2)), repeat(vec(-ν .* k2), inner = 2), random_forcing, noise, plan, iplan,
         phys(), phys(), phys(), phys(), phys(), phys(), spec(), spec(), spec())
 end
 
-Base.show(io::IO, m::NSEModel) = print(io, "NSEModel(ν = $(m.ν), ", m.grid, ")")
+function Base.show(io::IO, m::NSEModel)
+    print(io, "NSEModel(ν = $(m.ν), ", m.grid)
+    m.random_forcing === nothing || print(io, ", ", m.random_forcing)
+    m.noise === nothing || print(io, ", ", m.noise)
+    print(io, ")")
+end
 
 # The irfft plans may overwrite their input, so they are always applied to the work array `sc`.
 function _velocity!(u, v, w_hat, m::NSEModel)
@@ -104,11 +120,16 @@ end
 _mat(m::NSEModel, u::AbstractVector{<:Complex}) = reshape(u, m.grid.Mx, m.grid.Ny)
 _mat(m::NSEModel, u::AbstractVector{<:Real}) = reshape(reinterpret(ComplexF64, u), m.grid.Mx, m.grid.Ny)
 
-nonlinear_vec!(du, u, m::NSEModel, t) = (nonlinear!(_mat(m, du), _mat(m, u), m); du)
+# Adds the random forcing at time t, if any, to the spectral vorticity `dw` (a matrix).
+_add_random!(dw, m::NSEModel{P, IP, Nothing}, t) where {P, IP} = dw
+_add_random!(dw, m::NSEModel, t) = (add_random_forcing!(vec(dw), m.random_forcing, t); dw)
+
+nonlinear_vec!(du, u, m::NSEModel, t) = (dw = _mat(m, du); nonlinear!(dw, _mat(m, u), m); _add_random!(dw, m, t); du)
 
 function rhs_vec!(du, u, m::NSEModel, t)
     nonlinear!(_mat(m, du), _mat(m, u), m)
     w = _mat(m, u); dw = _mat(m, du)
+    _add_random!(dw, m, t)
     @. dw -= m.ν * m.grid.κ2 * w
     return du
 end

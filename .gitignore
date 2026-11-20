@@ -15,3 +15,7 @@ benchmarks/turbulence/results/
 benchmarks/turbulence/figs/
 benchmarks/turbulence/*.log
 benchmarks/turbulence/jobs.txt
+benchmarks/stochastic/results/
+benchmarks/stochastic/figs/
+benchmarks/stochastic/warm.jls
+benchmarks/stochastic/*.log

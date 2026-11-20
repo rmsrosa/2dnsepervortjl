@@ -21,6 +21,15 @@ the formulation, which must match the solver:
   `QNDF(linsolve = KrylovJL_GMRES(), concrete_jac = false)` (with `KrylovJL_GMRES` from
   LinearSolve). The Jacobian is dense, so it should not be assembled except on small grids.
   For viscous flows converging to steady states.
+* `:sde`: `SDEProblem` for a model with an [`AdditiveNoise`](@ref), with the real
+  reinterpretation of the state and a sparse noise matrix (non-diagonal noise), for the
+  solvers of StochasticDiffEq: e.g. `EM()` (fixed step), `SRA1()`, `SOSRA()` (adaptive, for
+  additive noise). Pass `seed` to the solver for reproducibility.
+
+Problems can also be integrated with the fixed-step schemes of this package,
+[`StochasticExpEuler`](@ref) and [`SplitStochasticRK`](@ref), with any `kind` allowed by the
+model (`:sde` when it has a stochastic forcing). For stiff viscous terms with noise, use the
+exponential schemes [`StochasticExpEuler`](@ref) and [`StochasticETDRK4`](@ref).
 
 The state of the solution can be converted back to the spectral vorticity with
 [`state_to_vorticity_hat`](@ref).
@@ -40,8 +49,16 @@ function NSEProblem(model::NSEModel, ω0, tspan; kind::Symbol = :full)
         SplitODEProblem(DiagonalOperator(model.L), nonlinear_vec!, w0, tspan, model)
     elseif kind === :implicit
         ODEProblem(ODEFunction(rhs_vec!; jvp = jvp_vec!), collect(reinterpret(Float64, w0)), tspan, model)
+    elseif kind === :sde
+        model.noise === nothing && throw(ArgumentError("kind = :sde requires a model with an AdditiveNoise"))
+        G = _real_noise_matrix(model.noise)
+        SDEProblem(rhs_vec!, _AdditiveNoiseRate(G), collect(reinterpret(Float64, w0)), tspan, model;
+            noise_rate_prototype = copy(G))
     else
-        throw(ArgumentError("kind must be :full, :split or :implicit, got :$kind"))
+        throw(ArgumentError("kind must be :full, :split, :implicit or :sde, got :$kind"))
+    end
+    if model.noise !== nothing && kind in (:full, :split, :implicit)
+        throw(ArgumentError("the model has a stochastic forcing: use kind = :sde"))
     end
     return NSEProblem(model, prob, kind)
 end
@@ -69,3 +86,30 @@ The spectral vorticity, of size `(Mx, Ny)`, corresponding to the state `u` of a 
 `p` (e.g. `sol.u[end]` or `integrator.u`). Shares memory with `u`.
 """
 state_to_vorticity_hat(p::NSEProblem, u) = _mat(p.model, u)
+
+# The noise matrix σΦ in the real reinterpretation of the state: the complex entry (i, j)
+# becomes the rows 2i - 1 (real part) and 2i (imaginary part).
+function _real_noise_matrix(a::AdditiveNoise)
+    I = Int[]; J = Int[]; V = Float64[]
+    G = a.G
+    for j in axes(G, 2), i in axes(G, 1)
+        z = G[i, j]
+        iszero(z) && continue
+        real(z) != 0 && (push!(I, 2i - 1); push!(J, j); push!(V, real(z)))
+        imag(z) != 0 && (push!(I, 2i); push!(J, j); push!(V, imag(z)))
+    end
+    return sparse(I, J, V, 2 * size(G, 1), size(G, 2))
+end
+
+# Additive noise: the noise rate is constant; only the stored values are copied.
+struct _AdditiveNoiseRate
+    G::SparseMatrixCSC{Float64, Int}
+end
+function (g::_AdditiveNoiseRate)(du, u, p, t)
+    if du isa SparseMatrixCSC && length(nonzeros(du)) == length(nonzeros(g.G))
+        nonzeros(du) .= nonzeros(g.G)        # same structure (the usual case): copy the values
+    else
+        du .= g.G
+    end
+    return du
+end
