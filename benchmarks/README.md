@@ -6,6 +6,8 @@ These scripts are not part of the website, since they take long to run and their
 * `turbulence/`: the comparison of time-stepping methods for a weakly turbulent flow reported in the page "Time stepping for weakly turbulent flows" (warm-up, runs of all the methods, timings and analysis). Run `bash run_all.sh` from that folder; it takes about 1.5 hours on 4 cores.
 * `benchmark_stiff_solvers.jl`: the benchmark reported in the page "Stiff solvers, Jacobians and automatic differentiation", comparing explicit, implicit (with the analytic Jacobian-vector product) and exponential (ETDRK4) solvers. It takes about a minute.
 
+* `cost_scaling.jl`: the cost of one evaluation of the nonlinear term and of one `StochasticETDRK4` step for N from 64 up to `Nmax`, to estimate the cost of a simulation on a given machine. Run it from the repository root with `julia --project=. benchmarks/cost_scaling.jl [threads] [Nmax]`.
+
 They are written in the [Literate.jl](https://github.com/fredrikekre/Literate.jl) format, like the pages of the site, and use the environment of the repository. They can be run as plain scripts (in which case the plots are not shown), from the root of the repository:
 
 ```bash
