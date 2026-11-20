@@ -58,6 +58,10 @@ menu = [
         "src/literate/stiff_solvers_report.jl"
         "pages/turbulence_timestepping"
     ]
+    "The NSEPeriodic2D package" => [
+        "src/literate/package_usage.jl"
+        "src/literate/package_forced_flow.jl"
+    ]
     "Simulations"
     "pages/references"
 ]
