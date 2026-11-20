@@ -156,4 +156,6 @@ end
     @test rb.retcode == :BlowUp
 end
 
+include("stochastic.jl")
+
 end
