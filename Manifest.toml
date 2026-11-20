@@ -2,7 +2,7 @@
 
 julia_version = "1.13.4"
 manifest_format = "2.1"
-project_hash = "2e58899a3257c6924f6d3697838debfc6b667ae2"
+project_hash = "6a14603fa69355d56bc2589e65dace13cbf31fb4"
 
 [[deps.ADTypes]]
 deps = ["PrecompileTools"]
@@ -1533,6 +1533,13 @@ deps = ["Artifacts", "Pkg"]
 uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
 version = "1.11.0"
 
+[[deps.LazyJLLWrappers]]
+deps = ["Artifacts", "Libdl", "Pkg", "Preferences", "TOML"]
+git-tree-sha1 = "4753919f2a12d14862eab9e4e4cfa2ed08af48d3"
+registries = "General"
+uuid = "21706172-204c-4d4f-5420-656854206f44"
+version = "1.2.7"
+
 [[deps.LazyModules]]
 git-tree-sha1 = "a560dd966b386ac9ae60bdd3a3d3a326062d3c3e"
 registries = "General"
@@ -1583,11 +1590,11 @@ uuid = "7e76a0d4-f3c7-5321-8279-8d96eeed0f29"
 version = "1.7.1+1"
 
 [[deps.Libiconv_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "be484f5c92fad0bd8acfef35fe017900b0b73809"
+deps = ["Artifacts", "LazyJLLWrappers", "Libdl"]
+git-tree-sha1 = "7b395350a0ba7cf31fd533af9f59ebc8eb144e08"
 registries = "General"
 uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
-version = "1.18.0+0"
+version = "1.18.1"
 
 [[deps.Libmount_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1908,6 +1915,12 @@ git-tree-sha1 = "7437c911e62f50e7a043a774ebdc0dbd780d9fe5"
 registries = "General"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
 version = "1.1.0"
+
+[[deps.NSEPeriodic2D]]
+deps = ["CommonSolve", "FFTW", "LinearAlgebra", "Random", "SciMLBase", "SciMLOperators", "Statistics"]
+path = "NSEPeriodic2D"
+uuid = "964c2fa4-4d58-4920-9818-d850cca8d140"
+version = "0.1.0"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]

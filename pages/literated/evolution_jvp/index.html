@@ -117,10 +117,19 @@
     <li><a href="/2dnsepervortjl/pages/turbulence_timestepping">7.5. Time stepping for weakly turbulent flows</a></li>
     </div>
     <div class="menu-level-1">
-    <li>8. Simulations</li>
+    <li>8. The NSEPeriodic2D package</li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/package_usage">8.1. Using the NSEPeriodic2D package</a></li>
+    </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/package_forced_flow">8.2. A forced flow with the package</a></li>
     </div>
     <div class="menu-level-1">
-    <li><a href="/2dnsepervortjl/pages/references">9. References</a></li>
+    <li>9. Simulations</li>
+    </div>
+    <div class="menu-level-1">
+    <li><a href="/2dnsepervortjl/pages/references">10. References</a></li>
     </div>
 <div>
 
@@ -399,12 +408,12 @@ for &#40;name, alg&#41; in methods
         &quot;steps: &quot;, sol.stats.naccept
     &#41;
 end</code></pre>
-<pre><code class="language-julia">Tsit5 &#40;explicit&#41;          Success   time: 1.283  s   relerr: 1.6e-9   f &#43; jvp evals: 5871   steps: 978
-Vern9 &#40;explicit&#41;          Success   time: 2.73   s   relerr: 2.3e-11  f &#43; jvp evals: 12402  steps: 775
-QNDF &#43; jvp &#43; GMRES        Success   time: 0.787  s   relerr: 4.8e-8   f &#43; jvp evals: 1990   steps: 183
-FBDF &#43; jvp &#43; GMRES        Success   time: 1.092  s   relerr: 3.7e-6   f &#43; jvp evals: 2671   steps: 224
-KenCarp47 &#43; jvp &#43; GMRES   Success   time: 1.233  s   relerr: 2.9e-7   f &#43; jvp evals: 3301   steps: 19
-TRBDF2 &#43; jvp &#43; GMRES      Success   time: 0.918  s   relerr: 1.9e-5   f &#43; jvp evals: 2434   steps: 28</code></pre>
+<pre><code class="language-julia">Tsit5 &#40;explicit&#41;          Success   time: 0.691  s   relerr: 1.6e-9   f &#43; jvp evals: 5871   steps: 978
+Vern9 &#40;explicit&#41;          Success   time: 1.48   s   relerr: 2.3e-11  f &#43; jvp evals: 12402  steps: 775
+QNDF &#43; jvp &#43; GMRES        Success   time: 0.512  s   relerr: 4.8e-8   f &#43; jvp evals: 1990   steps: 183
+FBDF &#43; jvp &#43; GMRES        Success   time: 0.456  s   relerr: 5.3e-6   f &#43; jvp evals: 2310   steps: 216
+KenCarp47 &#43; jvp &#43; GMRES   Success   time: 0.642  s   relerr: 2.9e-7   f &#43; jvp evals: 3301   steps: 19
+TRBDF2 &#43; jvp &#43; GMRES      Success   time: 0.541  s   relerr: 1.9e-5   f &#43; jvp evals: 2434   steps: 28</code></pre>
 <h2 id="convergence_to_the_steady_state"><a href="#convergence_to_the_steady_state" class="header-anchor">Convergence to the steady state</a></h2>
 <p>The forcing has a single mode and the viscosity is large, so the solution converges to the steady state \(\omega_\infty = -\Delta^{-1}g\). With the implicit method, we can take large time steps once the transient has decayed.</p>
 <pre><code class="language-julia">prob_long &#61; ODEProblem&#40;fun, u0, &#40;0.0, 10.0&#41;, params&#41;
@@ -488,7 +497,7 @@ count&#40;&#33;iszero, J_small&#41; / length&#40;J_small&#41;</code></pre>
         </div>
     
 
-    Last modified: November 19, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
+    Last modified: November 20, 2026. Built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>, using the <a href="https://github.com/rmsrosa/booksjl-franklin-template">Book Template</a>.
 </div><!-- CONTENT ENDS HERE -->
 
       </div> <!-- .books-content -->
