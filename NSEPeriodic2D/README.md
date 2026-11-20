@@ -86,6 +86,34 @@ Notes:
 * A model holds preallocated work arrays and FFTW plans, so it must not be shared by computations running concurrently; build one per thread or task.
 * The forcing is steady.
 
+## Stochastic and random forcing
+
+The package also solves
+
+$$
+\mathrm{d}\mathbf{u} + (\mathbf{u}\cdot\nabla\mathbf{u} + \nabla p)\,\mathrm{d}t = \nu\Delta\mathbf{u}\,\mathrm{d}t + \mathbf{f}\,\mathrm{d}t + N_t\,\mathrm{d}t + \sigma\Phi\,\mathrm{d}W_t,
+$$
+
+with a random forcing $N_t$ (an arbitrary process) and an additive noise $\sigma\Phi\,\mathrm{d}W_t$ on a finite set of modes:
+
+```julia
+modes = fourier_modes(grid, 3, 5)                  # divergence-free Fourier modes, unit mean square
+noise = AdditiveNoise(modes; σ = 0.06)             # σ Φ dWₜ; energy_injection_rate(noise) = ½σ² Σ aⱼ²
+path  = ou_path(4, (0.0, 100.0); θ = 0.5, s = 0.3, dt = 0.01)   # or compound_poisson_path, lorenz_path, any η(t)
+model = NSEModel(grid; ν = 1e-2, noise, random_forcing = RandomForcing(fourier_modes(grid, [(1, 2), (2, 1)]), path))
+prob  = NSEProblem(model, zeros(grid.Nx, grid.Ny), (0.0, 100.0); kind = :sde)
+res   = simulate(prob, StochasticETDRK4(); dt = 0.01, save_every = 0.5, seed = 1)
+```
+
+* `kind = :sde` builds an `SDEProblem` (real state, sparse noise matrix) for the solvers of StochasticDiffEq, e.g. `EM()`, `SRA1()`, `SOSRA()`.
+* The package has its own fixed-step schemes, used with `simulate`: `StochasticETDRK4()`, `StochasticExpEuler()` (both integrate the viscous term and the stochastic convolution exactly) and `SplitStochasticRK(:rk4)` or `SplitStochasticRK(:ssprk3)` (Strang splitting with the noise).
+* A random forcing alone is a time-dependent forcing, so the deterministic solvers and formulations also apply. For a compound Poisson path, pass `tstops = jump_times(path)` to adaptive solvers.
+
+In a comparison against the exact budgets $2\nu\langle Z\rangle = \varepsilon$ and $2\nu\langle P\rangle = \eta$ (website section "Stochastic and random forcing"):
+* `StochasticETDRK4()` and `SplitStochasticRK(:rk4)` were unbiased within about 1% up to a CFL number of about 4.4, and were the cheapest.
+* `EM()` and `StochasticExpEuler()` were biased by a few percent even with much smaller steps.
+* `SRA1()` and `SOSRA()` are practical only with very loose tolerances (`reltol = abstol = 1`); with usual tolerances their steps collapse.
+
 ## Examples
 
 The folder [`examples/`](examples/) has two scripts, with their own environment (run them from that folder with `julia --project=. script.jl`):

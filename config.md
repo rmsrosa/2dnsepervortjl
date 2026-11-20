@@ -61,6 +61,7 @@ menu = [
     "The NSEPeriodic2D package" => [
         "src/literate/package_usage.jl"
         "src/literate/package_forced_flow.jl"
+        "src/literate/package_stochastic.jl"
     ]
     "Simulations"
     "pages/references"

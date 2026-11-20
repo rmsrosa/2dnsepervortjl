@@ -50,7 +50,7 @@ res = simulate(prob, StochasticETDRK4(); dt = 0.01, save_every = 0.5, seed = 202
 plot(res.t, [res.energy res.enstrophy], xlabel = "t", label = ["E" "Z"],
     title = "Energy and enstrophy, driven by the noise", titlefont = 10)
 
-# In a statistically steady state, the mean energy and enstrophy budgets close exactly: $2\nu\langle Z\rangle = \varepsilon$ and $2\nu\langle P\rangle = \eta$, with $Z$ the enstrophy and $P$ the palinstrophy. This holds for any flow, chaotic or not, so it is a sharp check of a numerical method, independent of the trajectory. After the transient:
+# In a statistically steady state, the mean energy and enstrophy budgets close exactly: $2\nu\langle Z\rangle = \varepsilon$ and $2\nu\langle P\rangle = \eta$, with $Z$ the enstrophy and $P$ the palinstrophy. This holds for any flow, chaotic or not, so it is a check of a numerical method that does not depend on the trajectory. After the transient, over this short window, the ratios below should be within a few percent of 1, the size of the sampling error (they change from one build of this page to another); see the comparison of methods at the end for longer runs:
 
 s = res.t .> 150
 @printf("2ν⟨Z⟩/ε = %.3f,   2ν⟨P⟩/η = %.3f\n", 2 * model.ν * sum(res.enstrophy[s]) / count(s) / ε,
@@ -102,4 +102,42 @@ plot(res2.t, res2.energy, xlabel = "t", label = "E", title = "Noise and Ornstein
 
 # ## Comparison of methods
 
-# RESULTS_PLACEHOLDER
+# To compare the methods, we use the flow of the first example (noise on the modes with $3 \leq |\boldsymbol{\kappa}| \leq 5$, $\varepsilon = 0.1$, $\nu = 10^{-2}$, $64 \times 64$) and the exact budgets $2\nu\langle Z\rangle = \varepsilon$ and $2\nu\langle P\rangle = \eta$ as references. Each method starts from the same state, at $t = 600$ after a warm-up from rest with the stochastic ETDRK4 scheme, and runs for 2000 time units, with independent noise. The tables give the relative imbalances $2\nu\langle Z\rangle/\varepsilon - 1$ and $2\nu\langle P\rangle/\eta - 1$ (corrected for the change of $E$ and $Z$ over the run), with 95% confidence intervals from 10 batch means, the time-averaged energy, the maximum CFL number for the fixed-step methods (with $k_{\max} = 21$) and the cost. These results were obtained once, on a 4-core Linux container, with each run single-threaded and four runs at a time, and are static: the code that produced them is in the folder [`benchmarks/stochastic/`](https://github.com/rmsrosa/2dnsepervortjl/tree/main/benchmarks/stochastic) of the repository. The timings are indicative only. In the pilot run, the flow was statistically steady after about 150 time units, with $\max(|u| + |v|) \approx 8$ and $\kappa_\sigma \approx 4.1$.
+#
+# | Method | dt or tolerance | Status | Max CFL | Energy balance 2ν⟨Z⟩/ε - 1 | Enstrophy balance 2ν⟨P⟩/η - 1 | ⟨E⟩ | Nonlinear evaluations per time unit | Steps per time unit | Wall time per time unit (s) |
+# | :--- | ---: | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+# | Stochastic ETDRK4 | dt = 0.025 | stable | 4.43 | +0.005 ± 0.011 | +0.003 ± 0.012 | 2.261 | 160 | 40 | 0.0104 |
+# | Stochastic ETDRK4 | dt = 0.02 | stable | 3.71 | +0.007 ± 0.012 | +0.006 ± 0.013 | 2.272 | 200 | 50 | 0.0121 |
+# | Stochastic ETDRK4 | dt = 0.01 | stable | 1.83 | +0.002 ± 0.013 | +0.002 ± 0.012 | 2.280 | 400 | 100 | 0.0234 |
+# | Stochastic ETDRK4 | dt = 0.005 | stable | 0.92 | -0.004 ± 0.012 | -0.005 ± 0.012 | 2.247 | 800 | 200 | 0.0485 |
+# | Split RK4 | dt = 0.025 | stable | 4.39 | -0.007 ± 0.013 | -0.006 ± 0.013 | 2.222 | 160 | 40 | 0.0116 |
+# | Split RK4 | dt = 0.02 | stable | 3.48 | -0.004 ± 0.019 | -0.003 ± 0.019 | 2.253 | 200 | 50 | 0.0130 |
+# | Split RK4 | dt = 0.01 | stable | 1.72 | +0.000 ± 0.019 | -0.002 ± 0.015 | 2.266 | 400 | 100 | 0.0252 |
+# | Split RK4 | dt = 0.005 | stable | 0.93 | +0.001 ± 0.014 | -0.003 ± 0.015 | 2.252 | 800 | 200 | 0.0522 |
+# | Split SSPRK3 | dt = 0.025 | blew up at t = 602 | – | – | – | – | – | – | – |
+# | Split SSPRK3 | dt = 0.02 | stable | 3.49 | +0.003 ± 0.011 | +0.002 ± 0.013 | 2.295 | 150 | 50 | 0.0105 |
+# | Split SSPRK3 | dt = 0.01 | stable | 1.78 | -0.010 ± 0.011 | -0.005 ± 0.009 | 2.229 | 300 | 100 | 0.0209 |
+# | Split SSPRK3 | dt = 0.005 | stable | 0.89 | -0.004 ± 0.011 | -0.001 ± 0.014 | 2.269 | 600 | 200 | 0.0415 |
+# | Stochastic exponential Euler | dt = 0.002 | blew up at t = 658 | – | – | – | – | – | – | – |
+# | Stochastic exponential Euler | dt = 0.001 | stable | 0.19 | +0.033 ± 0.009 | +0.052 ± 0.010 | 2.362 | 1000 | 1000 | 0.0888 |
+# | Stochastic exponential Euler | dt = 0.0005 | stable | 0.09 | +0.002 ± 0.011 | +0.015 ± 0.010 | 2.266 | 2000 | 2000 | 0.1816 |
+# | Euler-Maruyama | dt = 0.001 | stable | 0.18 | +0.045 ± 0.012 | +0.064 ± 0.010 | 2.377 | 1000 | 1000 | 0.0565 |
+# | Euler-Maruyama | dt = 0.0005 | stable | 0.09 | +0.023 ± 0.011 | +0.032 ± 0.011 | 2.352 | 2000 | 2000 | 0.1114 |
+# | SRA1 | tol = 1.0 | stable | – | -0.005 ± 0.015 | -0.005 ± 0.016 | 2.240 | – | 96 | 0.0132 |
+# | SRA1 | tol = 0.1 | stable | – | +0.000 ± 0.013 | -0.002 ± 0.011 | 2.281 | – | 1632 | 0.1977 |
+# | SOSRA | tol = 1.0 | stable | – | +0.008 ± 0.010 | +0.008 ± 0.008 | 2.287 | – | 158 | 0.0281 |
+#
+# For the adaptive methods of StochasticDiffEq, `tol` is `reltol = abstol`. Their solver statistics do not count the evaluations of the drift, so only the steps are given.
+#
+# ![Energy balance](/assets/images/stochastic/energy_balance.png)
+#
+# ![Enstrophy balance](/assets/images/stochastic/enstrophy_balance.png)
+#
+# ### Discussion
+#
+# * **All the stable runs sample the same statistics**, $\langle E\rangle \approx 2.22$ to $2.30$, except for the biased ones below, and the budgets close within the sampling error, about $\pm 1\%$ to $\pm 2\%$, for the stochastic ETDRK4, the split RK4 and SSPRK3 schemes, and SRA1 and SOSRA.
+# * **The schemes based on forward Euler for the advection, Euler-Maruyama and the stochastic exponential Euler, are biased**: Euler-Maruyama injects 2% to 6% too much energy and enstrophy (more for enstrophy) even with steps 25 to 50 times smaller than the others, and the stochastic exponential Euler scheme 3% to 5% at `dt = 0.001`, and still 1.5% too much enstrophy at `dt = 0.0005`, at 5 to 17 times the cost of the others. For Euler-Maruyama, the bias halves when the step is halved, as expected of a method of weak order one. Forward Euler amplifies the advected modes slightly at every step (its stability region does not contain the imaginary axis), which only the viscosity counteracts, and this shows up in the budgets. The stochastic exponential Euler scheme blew up at `dt = 0.002`, with a CFL number of only about 0.4.
+# * **The stochastic ETDRK4 and the split RK4 schemes** were stable up to the largest step tried, `dt = 0.025`, with a maximum CFL number of 4.4, and showed no detectable bias over a factor of 5 in the step. They are the cheapest, together with the split SSPRK3 scheme, which is cheaper per step but blew up at `dt = 0.025` (stable at `dt = 0.02`, CFL 3.5).
+# * **The adaptive methods SRA1 and SOSRA**, designed for additive noise, are impractical with usual tolerances: with `reltol = 1e-2` and `abstol = 1e-5`, SRA1 took about 280 000 steps per time unit (37 s per time unit, thousands of times more than the fixed-step schemes), its error control being dominated by the absolute errors in the many small coefficients. With `reltol = abstol = 1`, the steps are limited by stability rather than accuracy, about 100 per time unit, the cost is comparable to the fixed-step schemes, and the budgets close within the error; a tighter tolerance, 0.1, cost 15 times more with no measurable gain.
+#
+# **Recommendation.** For advection-dominated flows driven by additive noise, the stochastic ETDRK4 scheme (or the split RK4 scheme) with a fixed step chosen from the CFL condition, as in [Time stepping for weakly turbulent flows](/pages/turbulence_timestepping), with $\sigma \approx 2$ to $3$ relative to the largest velocities. The stochastic ETDRK4 scheme also integrates the viscous term exactly, so it handles stiff viscous terms as well. Euler-Maruyama and the stochastic exponential Euler scheme should be avoided for such flows. The comparison is for a single configuration, and differences in the statistics smaller than about 1% cannot be detected with these runs.

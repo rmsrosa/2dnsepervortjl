@@ -1,4 +1,4 @@
-# julia --project=. run.jl method param T   (param: dt for fixed-step schemes, reltol for adaptive)
+# julia --project=. run.jl method param T   (param: dt for fixed-step schemes, reltol = abstol for adaptive)
 include("common.jl")
 method, param, T = ARGS[1], parse(Float64, ARGS[2]), parse(Float64, ARGS[3])
 warm = deserialize("warm.jls")
@@ -15,9 +15,9 @@ elseif method == "SplitSSPRK3"
 elseif method == "EM"
     simulate(p, EM(); dt = param, save_every = 0.5, seed)
 elseif method == "SRA1"
-    simulate(p, SRA1(); reltol = param, abstol = 1e-3 * param, save_every = 0.5, seed)
+    simulate(p, SRA1(); reltol = param, abstol = param, save_every = 0.5, seed)
 elseif method == "SOSRA"
-    simulate(p, SOSRA(); reltol = param, abstol = 1e-3 * param, save_every = 0.5, seed)
+    simulate(p, SOSRA(); reltol = param, abstol = param, save_every = 0.5, seed)
 end
 mkpath("results")
 serialize(joinpath("results", "$(method)_$(param).jls"), (; method, param, T, r))
