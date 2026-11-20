@@ -125,6 +125,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/package_forced_flow">8.2. A forced flow with the package</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/package_stochastic">8.3. Stochastic and random forcing</a></li>
+    </div>
     <div class="menu-level-1">
     <li>9. Simulations</li>
     </div>
@@ -227,7 +230,7 @@ fig</code></pre>
 end
 nothing</code></pre>
 <pre><code class="language-julia">Test Summary:                    | Pass  Total  Time
-check composition &#96;irfft ∘ rfft&#96; |    1      1  0.5s</code></pre>
+check composition &#96;irfft ∘ rfft&#96; |    1      1  0.6s</code></pre>
 <p>We can also visualize the excited modes:</p>
 <pre><code class="language-julia">κ_x &#61; κ₀ * &#40;0:1/N:1/2&#41;
 κ_y &#61; κ₀ * &#40;0:1/N:1-1/N&#41;
@@ -288,7 +291,7 @@ nothing</code></pre>
 end
 nothing</code></pre>
 <pre><code class="language-julia">Test Summary:   | Pass  Total  Time
-Check operators |    5      5  0.8s</code></pre>
+Check operators |    5      5  1.0s</code></pre>
 <h2 id="one-mode_steady_state"><a href="#one-mode_steady_state" class="header-anchor">One-mode steady state</a></h2>
 <p>For forced-periodic flows, when the forcing function contains a single Fourier mode, there is a corresponding steady state vorticity function corresponding also to that single-mode in Fourier space, only with a different amplitude.</p>
 <p>In order to construct such pairs of forcing mode / steady state, we set the viscosity of the flow, choose the mode to be forced and define the strength of that force:</p>
@@ -353,7 +356,7 @@ nothing</code></pre>
 end
 nothing</code></pre>
 <pre><code class="language-julia">Test Summary:                         | Pass  Total  Time
-Check single-mode stable steady state |    5      5  1.0s</code></pre>
+Check single-mode stable steady state |    5      5  1.2s</code></pre>
 <p>All seems good.</p>
 
     <div class="navbar">

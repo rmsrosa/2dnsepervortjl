@@ -125,6 +125,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/package_forced_flow">8.2. A forced flow with the package</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/package_stochastic">8.3. Stochastic and random forcing</a></li>
+    </div>
     <div class="menu-level-1">
     <li>9. Simulations</li>
     </div>
@@ -225,7 +228,7 @@ nothing</code></pre>
 <pre><code class="language-julia">prob &#61; NSEProblem&#40;model, ω0, &#40;0.0, 8.0&#41;; kind &#61; :split&#41;
 
 res &#61; simulate&#40;prob, ETDRK4&#40;&#41;; dt &#61; 0.01, save_every &#61; 0.1, snapshot_every &#61; 0.1&#41;</code></pre>
-<pre><code class="language-julia">SimulationResult&#40;Success, 80 samples in &#91;0.1, 8.0&#93;, wall time 0.756 s&#41;</code></pre>
+<pre><code class="language-julia">SimulationResult&#40;Success, 80 samples in &#91;0.1, 8.0&#93;, wall time 0.874 s&#41;</code></pre>
 <p>The result holds the time series of the energy \(E = \tfrac12\langle|\mathbf{u}|^2\rangle\), the enstrophy \(Z = \tfrac12\langle\omega^2\rangle\), the palinstrophy \(P = \tfrac12\langle|\nabla\omega|^2\rangle\), the velocity maxima and the CFL number, the time-averaged energy spectrum, the snapshots and the final state:</p>
 <pre><code class="language-julia">plot&#40;res.t, &#91;res.energy res.enstrophy res.palinstrophy&#93;, yscale &#61; :log10, xlabel &#61; &quot;t&quot;,
     label &#61; &#91;&quot;E&quot; &quot;Z&quot; &quot;P&quot;&#93;, title &#61; &quot;Energy, enstrophy and palinstrophy&quot;, titlefont &#61; 10&#41;</code></pre>
@@ -250,10 +253,10 @@ plot&#33;&#40;res.t, dist&#91;1&#93; .* exp.&#40;-&#40;res.t .- res.t&#91;1&#93;
 <pre><code class="language-julia">probi &#61; NSEProblem&#40;model, ω0, &#40;0.0, 8.0&#41;; kind &#61; :implicit&#41;
 
 resi &#61; simulate&#40;probi, QNDF&#40;linsolve &#61; KrylovJL_GMRES&#40;&#41;, concrete_jac &#61; false&#41;; save_every &#61; 0.1&#41;</code></pre>
-<pre><code class="language-julia">SimulationResult&#40;Success, 80 samples in &#91;0.1, 8.0&#93;, wall time 2.18 s&#41;</code></pre>
+<pre><code class="language-julia">SimulationResult&#40;Success, 80 samples in &#91;0.1, 8.0&#93;, wall time 2.38 s&#41;</code></pre>
 <p>The two final states agree within the tolerance of the implicit method:</p>
 <pre><code class="language-julia">sqrt&#40;energy&#40;model, resi.w_hat_final .- res.w_hat_final&#41; / energy&#40;model, res.w_hat_final&#41;&#41;</code></pre>
-<pre><code class="language-julia">4.0983689333459763e-7</code></pre>
+<pre><code class="language-julia">2.3021016280152637e-7</code></pre>
 <p>The usual <code>solve</code> of DifferentialEquations.jl also works with these problems, returning the usual solution; its states are converted back to the spectral vorticity with <code>state_to_vorticity_hat</code>:</p>
 <pre><code class="language-julia">sol &#61; solve&#40;prob, ETDRK4&#40;&#41;; dt &#61; 0.01, saveat &#61; 2.0&#41;
 
@@ -280,7 +283,7 @@ prob2 &#61; NSEProblem&#40;model2, ω0, &#40;0.0, 60.0&#41;&#41;
 nothing</code></pre>
 <p>The viscous term is not stiff, and advection dominates, so we use an adaptive explicit method:</p>
 <pre><code class="language-julia">res2 &#61; simulate&#40;prob2, Tsit5&#40;&#41;; reltol &#61; 1e-4, abstol &#61; 1e-7, save_every &#61; 0.5, snapshot_every &#61; 20.0&#41;</code></pre>
-<pre><code class="language-julia">SimulationResult&#40;Success, 120 samples in &#91;0.5, 60.0&#93;, wall time 0.571 s&#41;</code></pre>
+<pre><code class="language-julia">SimulationResult&#40;Success, 120 samples in &#91;0.5, 60.0&#93;, wall time 0.797 s&#41;</code></pre>
 <p>The vortices merge into larger ones, while the energy is nearly conserved and the enstrophy decays, as expected in two-dimensional flows:</p>
 <pre><code class="language-julia">plot&#40;
     plotfield&#40;grid2, vorticity&#40;model2, ω0&#41;; title &#61; &quot;t &#61; 0&quot;&#41;,

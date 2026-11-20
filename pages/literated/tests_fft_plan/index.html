@@ -123,6 +123,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/package_forced_flow">8.2. A forced flow with the package</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/package_stochastic">8.3. Stochastic and random forcing</a></li>
+    </div>
     <div class="menu-level-1">
     <li>9. Simulations</li>
     </div>
@@ -325,23 +328,23 @@ Planned FFTW with EXHAUSTIVE |    5      5  0.0s</code></pre>
     w &#61; copy&#40;&#36;vort&#41;
 &#41;;</code></pre>
 <pre><code class="language-julia">&#91; Info: FFTW no plan
-  58.769 μs &#40;12 allocations: 164.82 KiB&#41;
+  66.739 μs &#40;12 allocations: 164.82 KiB&#41;
 &#91; Info: FFTW plan with ESTIMATE
-  50.437 μs &#40;3 allocations: 164.34 KiB&#41;
+  67.620 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with ESTIMATE and mul&#33;
-  47.321 μs &#40;0 allocations: 0 bytes&#41;
+  65.146 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: FFTW plan with MEASURE
-  29.174 μs &#40;3 allocations: 164.34 KiB&#41;
+  40.169 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with MEASURE and mul&#33;
-  24.227 μs &#40;0 allocations: 0 bytes&#41;
+  35.142 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: FFTW plan with PATIENT
-  28.303 μs &#40;3 allocations: 164.34 KiB&#41;
+  38.056 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with PATIENT and mul&#33;
-  24.717 μs &#40;0 allocations: 0 bytes&#41;
+  34.641 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: FFTW plan with EXHAUSTIVE
-  27.471 μs &#40;3 allocations: 164.34 KiB&#41;
+  37.976 μs &#40;3 allocations: 164.34 KiB&#41;
 &#91; Info: FFTW plan with EXHAUSTIVE and mul&#33;
-  23.766 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
+  34.922 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
 <h2 id="direct_and_inverse_transforms"><a href="#direct_and_inverse_transforms" class="header-anchor">Direct and inverse transforms</a></h2>
 <p>Here we compare the timings between direct and inverse transforms. We restrict this to using <code>mul&#33;</code>, since this is what we will use at the end. <strong>Notice the direct transform is slightly faster than the inverse transform.</strong></p>
 <p>Only one note of <strong>warning:</strong> when using <code>mul&#33;</code> with an inverse transform plan, the last argument may mutate. Type <code>@edit mul&#33;&#40;vort, plan_inv_estimate.p, vort_hat&#41;</code> to see where this happens.</p>
@@ -393,17 +396,17 @@ Planned FFTW with EXHAUSTIVE |    5      5  0.0s</code></pre>
     w_hat &#61; copy&#40;&#36;vort_hat&#41;
 &#41;;</code></pre>
 <pre><code class="language-julia">&#91; Info: Direct and inverse FFTW plan with ESTIMATE and mul&#33;
-  45.900 μs &#40;0 allocations: 0 bytes&#41;
-  47.823 μs &#40;0 allocations: 0 bytes&#41;
+  64.495 μs &#40;0 allocations: 0 bytes&#41;
+  68.461 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: Direct and inverse FFTW plan with MEASURE and mul&#33;
-  24.497 μs &#40;0 allocations: 0 bytes&#41;
-  27.371 μs &#40;0 allocations: 0 bytes&#41;
+  35.282 μs &#40;0 allocations: 0 bytes&#41;
+  37.646 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: Direct and inverse FFTW plan with PATIENT and mul&#33;
-  24.337 μs &#40;0 allocations: 0 bytes&#41;
-  24.868 μs &#40;0 allocations: 0 bytes&#41;
+  34.722 μs &#40;0 allocations: 0 bytes&#41;
+  36.905 μs &#40;0 allocations: 0 bytes&#41;
 &#91; Info: Direct and inverse FFTW plan with EXHAUSTIVE and mul&#33;
-  25.358 μs &#40;0 allocations: 0 bytes&#41;
-  24.978 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
+  34.882 μs &#40;0 allocations: 0 bytes&#41;
+  36.604 μs &#40;0 allocations: 0 bytes&#41;</code></pre>
 
     <div class="navbar">
     <p id="nav">

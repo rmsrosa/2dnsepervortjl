@@ -125,6 +125,9 @@
     <div class="menu-level-2">
     <li><a href="/2dnsepervortjl/pages/literated/package_forced_flow">8.2. A forced flow with the package</a></li>
     </div>
+    <div class="menu-level-2">
+    <li><a href="/2dnsepervortjl/pages/literated/package_stochastic">8.3. Stochastic and random forcing</a></li>
+    </div>
     <div class="menu-level-1">
     <li>9. Simulations</li>
     </div>
@@ -365,12 +368,12 @@ for dt in dts
     report&#40;&quot;ETDRK4 dt&#61;&#36;dt&quot;, sol, elapsed, relerr&#41;
     push&#33;&#40;relerrs, relerr&#41;
 end</code></pre>
-<pre><code class="language-julia">Tsit5 &#40;explicit&#41;      Success   time: 0.579  s   relerr: 4.1e-10  steps: 979
-Vern9 &#40;explicit&#41;      Success   time: 1.321  s   relerr: 1.9e-11  steps: 775
-ETDRK4 dt&#61;0.01        Success   time: 0.085  s   relerr: 8.2e-5   steps: 100
-ETDRK4 dt&#61;0.005       Success   time: 0.134  s   relerr: 5.5e-6   steps: 200
-ETDRK4 dt&#61;0.0025      Success   time: 0.226  s   relerr: 4.0e-7   steps: 401
-ETDRK4 dt&#61;0.00125     Success   time: 0.395  s   relerr: 2.8e-8   steps: 801</code></pre>
+<pre><code class="language-julia">Tsit5 &#40;explicit&#41;      Success   time: 0.85   s   relerr: 4.1e-10  steps: 979
+Vern9 &#40;explicit&#41;      Success   time: 1.787  s   relerr: 1.9e-11  steps: 775
+ETDRK4 dt&#61;0.01        Success   time: 0.13   s   relerr: 8.2e-5   steps: 100
+ETDRK4 dt&#61;0.005       Success   time: 0.158  s   relerr: 5.5e-6   steps: 200
+ETDRK4 dt&#61;0.0025      Success   time: 0.294  s   relerr: 4.0e-7   steps: 401
+ETDRK4 dt&#61;0.00125     Success   time: 0.536  s   relerr: 2.8e-8   steps: 801</code></pre>
 <p>The observed order of convergence, which should approach 4 as the time step decreases:</p>
 <pre><code class="language-julia">log2.&#40;relerrs&#91;1:end-1&#93; ./ relerrs&#91;2:end&#93;&#41;</code></pre>
 <pre><code class="language-julia">3-element Vector&#123;Float64&#125;:

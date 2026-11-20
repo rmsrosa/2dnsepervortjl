@@ -1917,7 +1917,7 @@ uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
 version = "1.1.0"
 
 [[deps.NSEPeriodic2D]]
-deps = ["CommonSolve", "FFTW", "LinearAlgebra", "Random", "SciMLBase", "SciMLOperators", "Statistics"]
+deps = ["CommonSolve", "FFTW", "LinearAlgebra", "Random", "SciMLBase", "SciMLOperators", "SparseArrays", "Statistics"]
 path = "NSEPeriodic2D"
 uuid = "964c2fa4-4d58-4920-9818-d850cca8d140"
 version = "0.1.0"
