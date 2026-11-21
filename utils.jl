@@ -429,7 +429,7 @@ function postprocess_md(filename, out_path)
                         s"![\1](/assets/\2)",
                     r"^!\[\]\(([^/)][^\)]*)\)" => s"\\fig{\1}",
                     r"^!\[([^\]]*)\]\(([^/)][^\)]*)\)" => s"\\figalt{\1}{\2}",
-                    r"(?<!\!)\[[^\]]*\]\(/pages/([^\)]*)\)" =>
+                    r"(?<!\!)\[[^\[\]]*\]\(/pages/([^\)]*)\)" =>
                         s"{{link_section pages/\1}}",
                 )
             end
@@ -461,8 +461,8 @@ function postprocess_ipynb(filename)
                 r"(?<!')!\[([^\]]*)\]\(((?:\.\./)*)_assets/([^\)]*)\)" =>
                     s"![\1](\2assets/\3)",
                 r"(?<!')\"(?:\.\./)*_assets/([^\)]*)\"" => SubstitutionString("\"$(prepend)assets/\\1\""),
-                r"(?<!')(?<!\!)\[([^\]]*)\]\(/pages/([^\)]*)\)" =>
-                    SubstitutionString("[\\1]($(prepend)pages/\\1)"),
+                r"(?<!')(?<!\!)\[([^\[\]]*)\]\(/pages/([^\)]*)\)" =>
+                    SubstitutionString("[\\1]($(prepend)pages/\\2)"),
             )
             write(tmpio, line)
         end
